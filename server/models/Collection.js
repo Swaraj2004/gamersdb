@@ -4,7 +4,11 @@ const collectionSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "User",
     },
     games: {
         type: [
