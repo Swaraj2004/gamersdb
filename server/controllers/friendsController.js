@@ -31,7 +31,9 @@ const searchFriend = asyncHandler(async (req, res) => {
     }
 
     // Check for users
-    const users = await User.find({ username }).lean().exec();
+    const regexPattern = new RegExp(username, "i");
+    const query = { username: { $regex: regexPattern } };
+    const users = await User.find(query).lean().exec();
     if (!users.length) {
         return res.status(409).json({ message: "No users found" });
     }

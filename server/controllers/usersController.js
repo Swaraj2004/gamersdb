@@ -28,6 +28,21 @@ const createNewUser = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "All fields are required" });
     }
 
+    // Check if username valid
+    const isValidUsername = (username) => {
+        // Define a regular expression pattern for valid usernames
+        const usernamePattern = /^[a-zA-Z0-9_]+$/;
+
+        // Test the username against the pattern
+        return usernamePattern.test(username);
+    };
+    if (!isValidUsername(username)) {
+        return res.status(409).json({
+            message:
+                "Username is invalid. It should contain only letters, numbers, and underscores",
+        });
+    }
+
     // Check for duplicate username and email
     const duplicateUser = await User.findOne({ username }).lean().exec();
     if (duplicateUser) {
