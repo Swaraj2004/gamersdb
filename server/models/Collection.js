@@ -4,6 +4,7 @@ const collectionSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+        unique: true,
     },
     games: {
         type: [
