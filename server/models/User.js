@@ -16,6 +16,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    profileImg: {
+        type: String,
+    },
     collections: {
         type: [
             {
