@@ -129,11 +129,9 @@ const deleteCollection = asyncHandler(async (req, res) => {
     }
 
     // Remove collection
-    for (let i = 0; i < user.collections.length; i++) {
-        if (user.collections[i].toString() === id) {
-            user.collections.splice(i, 1);
-        }
-    }
+    user.collections = user.collections.filter(
+        (userCollectionId) => userCollectionId.toString() !== id
+    );
     await user.save();
     const result = await collection.deleteOne();
 

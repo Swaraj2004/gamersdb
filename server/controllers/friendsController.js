@@ -101,11 +101,9 @@ const removeFriend = asyncHandler(async (req, res) => {
     }
 
     // Remove friend
-    for (let i = 0; i < user.friends.length; i++) {
-        if (user.friends[i].toString() === friendId) {
-            user.friends.splice(i, 1);
-        }
-    }
+    user.friends = user.friends.filter(
+        (userfriendId) => userfriendId.toString() !== friendId
+    );
     await user.save();
 
     res.json({
