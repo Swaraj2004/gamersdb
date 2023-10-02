@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
         ],
         default: [],
     },
-    shared: {
+    sharedCollections: {
         type: [
             {
                 type: mongoose.Schema.Types.ObjectId,
@@ -42,6 +42,40 @@ const userSchema = new mongoose.Schema({
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "User",
+            },
+        ],
+        default: [],
+    },
+    sentFriendRequests: {
+        type: [
+            {
+                recipient: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    required: true,
+                },
+                status: {
+                    type: String,
+                    enum: ["pending", "accepted", "rejected"],
+                    default: "pending",
+                },
+            },
+        ],
+        default: [],
+    },
+    receivedFriendRequests: {
+        type: [
+            {
+                sender: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "User",
+                    required: true,
+                },
+                status: {
+                    type: String,
+                    enum: ["pending", "accepted", "rejected"],
+                    default: "pending",
+                },
             },
         ],
         default: [],

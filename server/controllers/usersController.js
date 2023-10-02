@@ -1,24 +1,31 @@
 const User = require("../models/User");
+const Collection = require("../models/Collection");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
+const isBase64 = require("is-base64");
 
-// @desc Get all users
-// @route GET /users
+// @desc Get user data
+// @route GET /user
 // @access Private
-const getAllUsers = asyncHandler(async (req, res) => {
-    // Get all users from MongoDB
-    const users = await User.find().select("-password").lean();
+const getUser = asyncHandler(async (req, res) => {
+    const { id } = req.body;
 
-    // If no users
-    if (!users?.length) {
-        return res.status(400).json({ message: "No users found" });
+    // Confirm data
+    if (!id) {
+        return res.status(400).json({ message: "User ID is required" });
     }
 
-    res.json(users);
+    // Check if user exists
+    const user = await User.findById(id).select("-password").lean();
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json(user);
 });
 
 // @desc Create new user
-// @route POST /users
+// @route POST /user
 // @access Private
 const createNewUser = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
@@ -61,16 +68,13 @@ const createNewUser = asyncHandler(async (req, res) => {
     // Create and store new user
     const user = await User.create(userObject);
 
-    if (user) {
-        //created
-        res.status(201).json({ message: `New user ${username} created` });
-    } else {
-        res.status(400).json({ message: "Invalid user data received" });
-    }
+    res.json({
+        message: `New user ${user.username} created`,
+    });
 });
 
 // @desc Update a user
-// @route PATCH /users
+// @route PATCH /user
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
     const { id, username, email, password, profileImg } = req.body;
@@ -85,7 +89,7 @@ const updateUser = asyncHandler(async (req, res) => {
     // Check if user exists to update
     const user = await User.findById(id).exec();
     if (!user) {
-        return res.status(400).json({ message: "User not found" });
+        return res.status(404).json({ message: "User not found" });
     }
 
     // Check for duplicate
@@ -96,23 +100,30 @@ const updateUser = asyncHandler(async (req, res) => {
         return res.status(409).json({ message: "Username already exists" });
     }
 
+    if (profileImg) {
+        // Image validation
+        if (!isBase64(profileImg, { allowMime: true, allowEmpty: false })) {
+            return res.status(400).json({ message: "Invalid image" });
+        }
+        user.profileImg = profileImg;
+    }
     user.username = username;
     user.email = email;
     if (password) {
         // Hash password
         user.password = await bcrypt.hash(password, 10);
     }
-    if (profileImg) {
-        user.profileImg = profileImg;
-    }
 
+    // Update user
     const updatedUser = await user.save();
 
-    res.json({ message: `${updatedUser.username} updated` });
+    res.json({
+        message: `User ${updatedUser.username} updated`,
+    });
 });
 
 // @desc Delete a user
-// @route DELETE /users
+// @route DELETE /user
 // @access Private
 const deleteUser = asyncHandler(async (req, res) => {
     const { id } = req.body;
@@ -125,18 +136,25 @@ const deleteUser = asyncHandler(async (req, res) => {
     // Check if user exists to delete
     const user = await User.findById(id).exec();
     if (!user) {
-        return res.status(400).json({ message: "User not found" });
+        return res.status(404).json({ message: "User not found" });
     }
 
-    const result = await user.deleteOne();
+    // Delete collections of user
+    const deletedCollections = await Collection.deleteMany({
+        owner: id,
+    });
+
+    // Delete user
+    const deletedUser = await user.deleteOne();
 
     res.json({
-        message: `Username ${result.username} with ID ${result._id} deleted`,
+        message: `User ${deletedUser.username} deleted`,
+        deletedCollections,
     });
 });
 
 module.exports = {
-    getAllUsers,
+    getUser,
     createNewUser,
     updateUser,
     deleteUser,

@@ -7,13 +7,26 @@ const asyncHandler = require("express-async-handler");
 const getAllFriends = asyncHandler(async (req, res) => {
     const { id } = req.body;
 
-    // Get all friends from MongoDB
-    const user = await User.findById(id).populate("friends").lean();
+    // Confirm data
+    if (!id) {
+        return res.status(400).json({ message: "User ID is required" });
+    }
+
+    // Check if user exists
+    const user = await User.findById(id)
+        .select("-password")
+        .populate("friends")
+        .lean();
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    // Get all friends from friends array
     const friends = user.friends;
 
     // If no friends
     if (!friends?.length) {
-        return res.status(400).json({ message: "No friends found" });
+        return res.status(200).json({ message: "No friends found" });
     }
 
     res.json(friends);
@@ -27,22 +40,20 @@ const searchFriend = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!username) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(400).json({ message: "Username required" });
     }
 
-    // Check for users
-    const regexPattern = new RegExp(username, "i");
-    const query = { username: { $regex: regexPattern } };
-    const users = await User.find(query).lean().exec();
+    // Check for user
+    const users = await User.find({ username }).limit(10).lean().exec();
     if (!users.length) {
-        return res.status(409).json({ message: "No users found" });
+        return res.status(409).json({ message: "User not found" });
     }
 
     res.json(users);
 });
 
 // @desc Add a friend
-// @route PATCH /user/addfriend
+// @route POST /user/friends
 // @access Private
 const addFriend = asyncHandler(async (req, res) => {
     const { userId, friendId } = req.body;
@@ -62,7 +73,7 @@ const addFriend = asyncHandler(async (req, res) => {
     const user = await User.findById(userId).exec();
     const friend = await User.findById(friendId).exec();
     if (!user || !friend) {
-        return res.status(400).json({ message: "User not found" });
+        return res.status(404).json({ message: "User not found" });
     }
 
     // Check if friend already added
@@ -74,11 +85,11 @@ const addFriend = asyncHandler(async (req, res) => {
     user.friends.push(friend);
     await user.save();
 
-    res.json({ message: `Friend with username ${friend.username} added.` });
+    res.json({ message: `Friend with username ${friend.username} added` });
 });
 
 // @desc Remove a friend
-// @route PATCH /user/removefriend
+// @route DELETE /user/friends
 // @access Private
 const removeFriend = asyncHandler(async (req, res) => {
     const { userId, friendId } = req.body;
@@ -92,7 +103,7 @@ const removeFriend = asyncHandler(async (req, res) => {
     const user = await User.findById(userId).exec();
     const friend = await User.findById(friendId).exec();
     if (!user || !friend) {
-        return res.status(400).json({ message: "User not found" });
+        return res.status(404).json({ message: "User not found" });
     }
 
     // Check if friend is not added

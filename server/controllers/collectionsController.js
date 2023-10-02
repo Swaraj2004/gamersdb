@@ -8,12 +8,18 @@ const asyncHandler = require("express-async-handler");
 const getAllCollections = asyncHandler(async (req, res) => {
     const { owner } = req.body;
 
+    // Check if owner exists
+    const user = await User.findById(owner).exec();
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
     // Get all collections from MongoDB
     const collections = await Collection.find({ owner }).lean().exec();
 
-    // If no friends
+    // If no collections
     if (!collections?.length) {
-        return res.status(400).json({ message: "No collections found" });
+        return res.status(200).json({ message: "No collections found" });
     }
 
     res.json(collections);
@@ -33,7 +39,7 @@ const createNewCollection = asyncHandler(async (req, res) => {
     // Check if owner exists
     const user = await User.findById(owner).exec();
     if (!user) {
-        return res.status(400).json({ message: "User not found" });
+        return res.status(404).json({ message: "User not found" });
     }
 
     // Check for duplicate collection name
@@ -57,7 +63,8 @@ const createNewCollection = asyncHandler(async (req, res) => {
     await user.save();
 
     res.json({
-        message: `Collection with name ${collection.name} created`,
+        message: `New collection created`,
+        collection,
     });
 });
 
@@ -75,13 +82,13 @@ const updateCollection = asyncHandler(async (req, res) => {
     // Check if collection exists to update
     const collection = await Collection.findById(id).exec();
     if (!collection) {
-        return res.status(400).json({ message: "Collection not found" });
+        return res.status(404).json({ message: "Collection not found" });
     }
 
     // Check if owner exists
     const user = await User.findById(owner).exec();
     if (!user) {
-        return res.status(400).json({ message: "User not found" });
+        return res.status(404).json({ message: "User not found" });
     }
 
     // Check for duplicate collection name
@@ -102,7 +109,10 @@ const updateCollection = asyncHandler(async (req, res) => {
 
     const updatedCollection = await collection.save();
 
-    res.json({ message: `Collection name ${updatedCollection.name} updated` });
+    res.json({
+        message: `Collection name ${updatedCollection.name} updated`,
+        updatedCollection,
+    });
 });
 
 // @desc Delete a collection
@@ -119,13 +129,13 @@ const deleteCollection = asyncHandler(async (req, res) => {
     // Check if collection exists to delete
     const collection = await Collection.findById(id).exec();
     if (!collection) {
-        return res.status(400).json({ message: "Collection not found" });
+        return res.status(404).json({ message: "Collection not found" });
     }
 
     // Check if owner exists
     const user = await User.findById(owner).exec();
     if (!user) {
-        return res.status(400).json({ message: "User not found" });
+        return res.status(404).json({ message: "User not found" });
     }
 
     // Remove collection
@@ -133,10 +143,11 @@ const deleteCollection = asyncHandler(async (req, res) => {
         (userCollectionId) => userCollectionId.toString() !== id
     );
     await user.save();
-    const result = await collection.deleteOne();
+    const deletedCollection = await collection.deleteOne();
 
     res.json({
-        message: `Collection ${result.name} with ID ${result._id} deleted`,
+        message: `Collection ${deletedCollection.name} with ID ${deletedCollection._id} deleted`,
+        deletedCollection,
     });
 });
 

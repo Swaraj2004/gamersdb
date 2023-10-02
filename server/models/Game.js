@@ -14,7 +14,7 @@ const gameSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    cover_url: {
+    coverUrl: {
         type: String,
     },
 });

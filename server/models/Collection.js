@@ -10,6 +10,15 @@ const collectionSchema = new mongoose.Schema({
         required: true,
         ref: "User",
     },
+    sharedWith: {
+        type: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
+        default: [],
+    },
     games: {
         type: [
             {
