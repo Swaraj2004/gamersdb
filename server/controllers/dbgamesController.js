@@ -83,7 +83,10 @@ const addGame = asyncHandler(async (req, res) => {
     const duplicate = await Game.findOne({ slug }).lean().exec();
     if (duplicate) {
         // Check if game is already in the collection
-        if (!collection.games.includes(duplicate._id)) {
+        const isInArr = collection.games.some(function (gameInArr) {
+            return gameInArr.equals(duplicate._id);
+        });
+        if (!isInArr) {
             collection.games.push(duplicate);
             await collection.save();
         } else {

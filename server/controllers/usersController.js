@@ -26,7 +26,7 @@ const getUser = asyncHandler(async (req, res) => {
 
 // @desc Create new user
 // @route POST /user
-// @access Private
+// @access Public
 const createNewUser = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
 
@@ -68,7 +68,7 @@ const createNewUser = asyncHandler(async (req, res) => {
     // Create and store new user
     const user = await User.create(userObject);
 
-    res.json({
+    res.status(201).json({
         message: `New user ${user.username} created`,
     });
 });
