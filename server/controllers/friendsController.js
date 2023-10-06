@@ -216,7 +216,10 @@ const removeFriend = asyncHandler(async (req, res) => {
     }
 
     // Check if friend is not added
-    if (!user.friends.includes(friendId)) {
+    const isInArr = user.friends.some(function (friendInArr) {
+        return friendInArr.equals(friend._id);
+    });
+    if (!isInArr) {
         return res.status(400).json({ message: "Friend not added" });
     }
 
