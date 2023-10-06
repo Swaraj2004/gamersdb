@@ -8,5 +8,8 @@ router
     .post(collectionsController.createNewCollection)
     .patch(collectionsController.updateCollection)
     .delete(collectionsController.deleteCollection);
+router
+    .route("/user/collection/sharedwith")
+    .get(collectionsController.getCollectionSharedWith);
 
 module.exports = router;

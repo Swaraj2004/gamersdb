@@ -6,16 +6,19 @@ const asyncHandler = require("express-async-handler");
 // @route GET /user/collections
 // @access Private
 const getAllCollections = asyncHandler(async (req, res) => {
-    const { owner } = req.body;
+    const { userId } = req.body;
 
-    // Check if owner exists
-    const user = await User.findById(owner).exec();
+    // Check if user exists
+    const user = await User.findById(userId).exec();
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
 
-    // Get all collections from MongoDB
-    const collections = await Collection.find({ owner }).lean().exec();
+    // Get all collections
+    const collections = await Collection.find({ owner: userId })
+        .populate("owner", "username")
+        .lean()
+        .exec();
 
     // If no collections
     if (!collections?.length) {
@@ -29,15 +32,15 @@ const getAllCollections = asyncHandler(async (req, res) => {
 // @route POST /user/collections
 // @access Private
 const createNewCollection = asyncHandler(async (req, res) => {
-    const { name, owner } = req.body;
+    const { userId, name } = req.body;
 
     // Confirm data
-    if (!name || !owner) {
+    if (!userId || !name) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Check if owner exists
-    const user = await User.findById(owner).exec();
+    // Check if user exists
+    const user = await User.findById(userId).exec();
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
@@ -45,7 +48,7 @@ const createNewCollection = asyncHandler(async (req, res) => {
     // Check for duplicate collection name
     const duplicate = await Collection.findOne({ name })
         .where("owner")
-        .equals(owner)
+        .equals(userId)
         .lean()
         .exec();
     if (duplicate) {
@@ -55,7 +58,10 @@ const createNewCollection = asyncHandler(async (req, res) => {
     }
 
     // Create and store new collection
-    const collectionObject = { name, owner };
+    const collectionObject = {
+        name,
+        owner: userId,
+    };
     const collection = await Collection.create(collectionObject);
 
     // Add collection id to user's collections array
@@ -72,10 +78,10 @@ const createNewCollection = asyncHandler(async (req, res) => {
 // @route PATCH /user/collections
 // @access Private
 const updateCollection = asyncHandler(async (req, res) => {
-    const { id, name, owner } = req.body;
+    const { id, name, userId } = req.body;
 
     // Confirm data
-    if (!id || !name || !owner) {
+    if (!id || !name || !userId) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -85,16 +91,23 @@ const updateCollection = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: "Collection not found" });
     }
 
-    // Check if owner exists
-    const user = await User.findById(owner).exec();
+    // Check if user exists
+    const user = await User.findById(userId).exec();
     if (!user) {
         return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if user is owner of the collection
+    if (userId !== collection.owner.toString()) {
+        return res
+            .status(400)
+            .json({ message: "User is not the owner of the collection" });
     }
 
     // Check for duplicate collection name
     const duplicate = await Collection.findOne({ name })
         .where("owner")
-        .equals(owner)
+        .equals(userId)
         .lean()
         .exec();
 
@@ -119,10 +132,10 @@ const updateCollection = asyncHandler(async (req, res) => {
 // @route DELETE /user/collections
 // @access Private
 const deleteCollection = asyncHandler(async (req, res) => {
-    const { id, owner } = req.body;
+    const { id, userId } = req.body;
 
     // Confirm data
-    if (!id || !owner) {
+    if (!id || !userId) {
         return res.status(400).json({ message: "Collection ID Required" });
     }
 
@@ -132,10 +145,17 @@ const deleteCollection = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: "Collection not found" });
     }
 
-    // Check if owner exists
-    const user = await User.findById(owner).exec();
+    // Check if user exists
+    const user = await User.findById(userId).exec();
     if (!user) {
         return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if user is owner of the collection
+    if (userId !== collection.owner.toString()) {
+        return res
+            .status(400)
+            .json({ message: "User is not the owner of the collection" });
     }
 
     // Remove collection
@@ -151,9 +171,60 @@ const deleteCollection = asyncHandler(async (req, res) => {
     });
 });
 
+// @desc Get all users to whom collection is shared
+// @route GET /user/collection/sharedwith
+// @access Private
+const getCollectionSharedWith = asyncHandler(async (req, res) => {
+    const { id, userId } = req.body;
+
+    // Confirm data
+    if (!id || !userId) {
+        return res.status(400).json({ message: "Collection ID Required" });
+    }
+
+    // Check if collection exists to delete
+    const collection = await Collection.findById(id)
+        .populate("sharedWith")
+        .lean();
+    if (!collection) {
+        return res.status(404).json({ message: "Collection not found" });
+    }
+
+    // Check if user exists
+    const user = await User.findById(userId).lean();
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if user is owner of the collection
+    if (userId !== collection.owner.toString()) {
+        return res
+            .status(400)
+            .json({ message: "User is not the owner of the collection" });
+    }
+
+    // Get all users to whom the collection is shared
+    let sharedWith = collection.sharedWith.map((user) => {
+        return {
+            _id: user._id,
+            username: user.username,
+        };
+    });
+
+    // If no shared collections
+    if (!sharedWith?.length) {
+        return res
+            .status(200)
+            .json({ message: "Collection is not shared with anyone" });
+    }
+
+    res.json(sharedWith);
+});
+
 module.exports = {
     getAllCollections,
     createNewCollection,
     updateCollection,
     deleteCollection,
+    getCollectionSharedWith,
 };

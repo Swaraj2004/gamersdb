@@ -15,7 +15,10 @@ const getAllSharedCollections = asyncHandler(async (req, res) => {
 
     // Check if user exists
     const user = await User.findById(userId)
-        .populate("sharedCollections")
+        .populate({
+            path: "sharedCollections",
+            populate: { path: "owner", select: "_id, username" },
+        })
         .lean();
     if (!user) {
         return res.status(404).json({ message: "User not found" });
