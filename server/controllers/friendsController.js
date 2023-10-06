@@ -6,15 +6,17 @@ const asyncHandler = require("express-async-handler");
 // @route GET /user/friends
 // @access Private
 const getAllFriends = asyncHandler(async (req, res) => {
-    const { id } = req.body;
+    const { userId } = req.body;
 
     // Confirm data
-    if (!id) {
+    if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
     }
 
     // Check if user exists
-    const user = await User.findById(id).populate("friends").lean();
+    const user = await User.findById(userId)
+        .populate("friends", "username")
+        .lean();
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
