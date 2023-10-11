@@ -18,6 +18,7 @@
         "express-async-handler": "^1.2.0",
         "is-base64": "^1.1.0",
         "mongoose": "^7.5.3",
+        "newsapi": "^2.4.1",
         "uuid": "^9.0.1"
     }
 }
