@@ -28,6 +28,7 @@ app.use(require("./routes/friendRoutes"));
 app.use(require("./routes/collectionRoutes"));
 app.use(require("./routes/dbgamesRoutes"));
 app.use(require("./routes/sharedCollectionsRoutes"));
+app.use(require("./routes/gamesRoutes"));
 app.use(require("./routes/newsRoutes"));
 
 app.all("*", (req, res) => {
