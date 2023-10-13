@@ -144,30 +144,15 @@ const getGameData = asyncHandler(async (req, res) => {
     // Fetched game data
     const game = response.data[0];
 
-    // Find ESRB rating
-    const ageRating = game.age_ratings
-        ? game.age_ratings.find((rating) => rating.category === 1)
-        : null;
+    // Set id, name, rating, summary
+    const id = game.id;
+    const name = game.name;
+    const rating = Math.round(game.aggregated_rating) || null;
+    const summary = game.summary || null;
 
-    // Names for recieved rating number from igdb
-    const ratingNum = {
-        6: "Rating Pending",
-        7: "RP Likely Mature 17+",
-        8: "Everyone",
-        9: "Everyone 10+",
-        10: "Teen 13+",
-        11: "Mature 17+",
-        12: "Adults Only 18+",
-    };
-
-    // Find developer companies
-    const developerCompanys = game.involved_companies
-        ? game.involved_companies.filter((company) => company.developer)
-        : null;
-
-    // Find publisher companies
-    const publisherCompanys = game.involved_companies
-        ? game.involved_companies.filter((company) => company.publisher)
+    // Find cover url
+    const cover_url = game.cover
+        ? `https:${game.cover.url}`.replace("thumb", "cover_big")
         : null;
 
     // Convert timestamp to human readable
@@ -194,45 +179,110 @@ const getGameData = asyncHandler(async (req, res) => {
 
         return `${month} ${day}, ${year}`;
     }
+    // Set release date
+    const release_date = dateReadable(game.first_release_date) || null;
+
+    // Find ESRB rating
+    const ageRating = game.age_ratings
+        ? game.age_ratings.find((rating) => rating.category === 1)
+        : null;
+    // Names for recieved rating number from igdb
+    const ratingNum = {
+        6: "Rating Pending",
+        7: "RP Likely Mature 17+",
+        8: "Everyone",
+        9: "Everyone 10+",
+        10: "Teen 13+",
+        11: "Mature 17+",
+        12: "Adults Only 18+",
+    };
+    // Set age rating
+    const age_rating = ageRating ? ratingNum[ageRating.rating] : null;
+
+    // Find genres
+    const genres = game.genres ? game.genres.map((genre) => genre.name) : null;
+
+    // Find game modes
+    const game_modes = game.game_modes
+        ? game.game_modes.map((mode) => mode.name)
+        : null;
+
+    // Find developer companies
+    const developers = game.involved_companies
+        ? game.involved_companies
+              .filter((company) => company.developer)
+              .map((developer) => developer.company.name)
+        : null;
+
+    // Find publisher companies
+    const publishers = game.involved_companies
+        ? game.involved_companies
+              .filter((company) => company.publisher)
+              .map((publisher) => publisher.company.name)
+        : null;
+
+    // Find platforms
+    const platforms = game.platforms
+        ? game.platforms.map((platform) => platform.name)
+        : null;
+
+    // Find player perspectives
+    const player_perspectives = game.player_perspectives
+        ? game.player_perspectives.map((perspective) => perspective.name)
+        : null;
+
+    // Find screenshots
+    const screenshots = game.screenshots
+        ? game.screenshots.map((screenshot) =>
+              `https:${screenshot.url}`.replace("thumb", "screenshot_huge")
+          )
+        : null;
+
+    // Find videos
+    const videos = game.videos
+        ? game.videos.map((video) => video.video_id)
+        : null;
+
+    // Find required websites with urls
+    const websiteCategories = {
+        1: "official",
+        13: "steam",
+        15: "itch",
+        16: "epicgames",
+        17: "gog",
+    };
+    const websites = game.websites
+        ? game.websites
+              .filter((website) =>
+                  [1, 13, 15, 16, 17].includes(website.category)
+              )
+              .map((website) => {
+                  return {
+                      category: websiteCategories[website.category],
+                      url: website.url,
+                  };
+              })
+        : null;
+    if (websites === []) websites = null;
 
     // Format fetched data
     const formattedData = {
-        id: game.id,
-        name: game.name,
-        rating: Math.round(game.aggregated_rating) || null,
-        summary: game.summary || null,
-        cover_url: game.cover
-            ? `https:${game.cover.url}`.replace("thumb", "cover_big")
-            : null,
-        release_date: dateReadable(game.first_release_date) || null,
-        age_rating: ageRating ? ratingNum[ageRating.rating] : null,
-        game_modes: game.game_modes
-            ? game.game_modes.map((mode) => mode.name)
-            : null,
-        genres: game.genres ? game.genres.map((genre) => genre.name) : null,
-        developers: developerCompanys
-            ? developerCompanys.map((developer) => developer.company.name)
-            : null,
-        publishers: publisherCompanys
-            ? publisherCompanys.map((publisher) => publisher.company.name)
-            : null,
-        platforms: game.platforms
-            ? game.platforms.map((platform) => platform.name)
-            : null,
-        player_perspectives: game.player_perspectives
-            ? game.player_perspectives.map((perspective) => perspective.name)
-            : null,
-        screenshots: game.screenshots
-            ? game.screenshots.map((screenshot) =>
-                  `https:${screenshot.url}`.replace("thumb", "screenshot_huge")
-              )
-            : null,
-        websites: game.websites
-            ? game.websites.map((website) => {
-                  return { category: website.category, url: website.url };
-              })
-            : null,
-        videos: game.videos ? game.videos.map((video) => video.video_id) : null,
+        id,
+        name,
+        rating,
+        summary,
+        cover_url,
+        release_date,
+        age_rating,
+        genres,
+        game_modes,
+        developers,
+        publishers,
+        platforms,
+        player_perspectives,
+        screenshots,
+        videos,
+        websites,
     };
 
     res.json(formattedData);
