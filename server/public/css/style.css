@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Audiowide&display=swap");
 
 * {
     margin: 0;
@@ -7,8 +7,8 @@
 }
 
 html {
-    font-family: "Share Tech Mono", monospace;
-    font-size: 2rem;
+    font-family: "Audiowide", monospace;
+    font-size: 1.8rem;
 }
 
 body {
@@ -18,4 +18,14 @@ body {
     display: grid;
     place-content: center;
     padding: 1rem;
+}
+
+img {
+    height: 7rem;
+    width: 7rem;
+    justify-self: center;
+}
+
+span {
+    color: #909090;
 }
