@@ -26,6 +26,12 @@ img {
     justify-self: center;
 }
 
-span {
-    color: #909090;
+h3 {
+    background: #823bdf;
+    background: -webkit-linear-gradient(to top left, #823bdf 0%, #0ea9ec 100%);
+    background: -moz-linear-gradient(to top left, #823bdf 0%, #0ea9ec 100%);
+    background: linear-gradient(to top left, #823bdf 0%, #0ea9ec 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
