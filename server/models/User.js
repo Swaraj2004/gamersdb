@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     },
     profileImg: {
         type: String,
+        default: null,
     },
     collections: {
         type: [
