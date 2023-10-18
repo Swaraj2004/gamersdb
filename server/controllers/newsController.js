@@ -14,7 +14,10 @@ const getNews = (req, res) => {
             page: page || 1,
         })
         .then((response) => {
-            res.json(response);
+            res.json({ result: response, success: true });
+        })
+        .catch((error) => {
+            res.status(500).json({ message: error.message, success: false });
         });
 };
 

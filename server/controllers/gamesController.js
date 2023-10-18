@@ -43,7 +43,7 @@ const getAllRecentAndUpcommingGames = asyncHandler(async (req, res) => {
         })),
     }));
 
-    res.json(formattedData);
+    res.json({ result: formattedData, success: true });
 });
 
 // @desc Get games
@@ -54,7 +54,9 @@ const searchGames = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!name) {
-        return res.status(400).json({ message: "Name is required" });
+        return res
+            .status(400)
+            .json({ message: "Name is required", success: false });
     }
 
     // If platforms or genres or minRating provided
@@ -96,7 +98,7 @@ const searchGames = asyncHandler(async (req, res) => {
             : null,
     }));
 
-    res.json(formattedData);
+    res.json({ result: formattedData, success: true });
 });
 
 // @desc Get game data
@@ -107,7 +109,9 @@ const getGameData = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!slug) {
-        return res.status(400).json({ message: "Game slug is required" });
+        return res
+            .status(400)
+            .json({ message: "Game slug is required", success: false });
     }
 
     // Fetch game data
@@ -138,7 +142,9 @@ const getGameData = asyncHandler(async (req, res) => {
 
     // Check if game exists
     if (!response.data.length) {
-        return res.status(404).json({ message: "Game not found" });
+        return res
+            .status(404)
+            .json({ message: "Game not found", success: false });
     }
 
     // Fetched game data
@@ -263,7 +269,7 @@ const getGameData = asyncHandler(async (req, res) => {
                   };
               })
         : null;
-    if (websites === []) websites = null;
+    if (websites.length === 0) websites = null;
 
     // Format fetched data
     const formattedData = {
@@ -285,7 +291,7 @@ const getGameData = asyncHandler(async (req, res) => {
         websites,
     };
 
-    res.json(formattedData);
+    res.json({ result: formattedData, success: true });
 });
 
 module.exports = {

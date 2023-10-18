@@ -10,7 +10,9 @@ const getAllSharedCollections = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
+        return res
+            .status(400)
+            .json({ message: "User ID is required", success: false });
     }
 
     // Check if user exists
@@ -21,7 +23,9 @@ const getAllSharedCollections = asyncHandler(async (req, res) => {
         })
         .lean();
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
     }
 
     // Get all shared collections
@@ -36,10 +40,12 @@ const getAllSharedCollections = asyncHandler(async (req, res) => {
 
     // If no shared collections
     if (!shared?.length) {
-        return res.status(200).json({ message: "No shared collections found" });
+        return res
+            .status(200)
+            .json({ message: "No shared collections found", success: false });
     }
 
-    res.json(shared);
+    res.json({ result: shared, success: true });
 });
 
 // @desc Share collection
@@ -50,20 +56,26 @@ const shareCollection = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!userId || !friendId || !collectionId) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res
+            .status(400)
+            .json({ message: "All fields are required", success: false });
     }
 
     // Check if user & friend exists
     const user = await User.findById(userId).exec();
     const friend = await User.findById(friendId).exec();
     if (!user || !friend) {
-        return res.status(404).json({ message: "User not found" });
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
     }
 
     // Check if collection exists
     const collection = await Collection.findById(collectionId);
     if (!collection) {
-        return res.status(404).json({ message: "Collection not found" });
+        return res
+            .status(404)
+            .json({ message: "Collection not found", success: false });
     }
 
     // Check if friend is not added
@@ -71,7 +83,9 @@ const shareCollection = asyncHandler(async (req, res) => {
         return friendInArr.equals(friend._id);
     });
     if (!friendInArr) {
-        return res.status(400).json({ message: "Friend not added" });
+        return res
+            .status(400)
+            .json({ message: "Friend not added", success: false });
     }
 
     // Check if collection already shared
@@ -81,7 +95,9 @@ const shareCollection = asyncHandler(async (req, res) => {
         return sharedCollectionInArr.equals(collection._id);
     });
     if (collectionInSharedArr) {
-        return res.status(400).json({ message: "Collection already shared" });
+        return res
+            .status(400)
+            .json({ message: "Collection already shared", success: false });
     }
 
     // Push collection to friend's sharedCollections
@@ -94,6 +110,7 @@ const shareCollection = asyncHandler(async (req, res) => {
 
     res.json({
         message: `Collection shared with ${friend.username}`,
+        success: true,
     });
 });
 
@@ -105,37 +122,44 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!friendId || !collectionId) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res
+            .status(400)
+            .json({ message: "All fields are required", success: false });
     }
 
     // Check if collection exists
     const collection = await Collection.findById(collectionId);
     if (!collection) {
-        return res.status(404).json({ message: "Collection not found" });
+        return res
+            .status(404)
+            .json({ message: "Collection not found", success: false });
     }
 
     // Check if friend exists
     const friend = await User.findById(friendId).exec();
     if (!friend) {
-        return res
-            .status(404)
-            .json({ message: `User with friendId ${friendId} not found` });
+        return res.status(404).json({
+            message: `User with friendId ${friendId} not found`,
+            success: false,
+        });
     }
 
     if (userId) {
         // Check if user exists
         const user = await User.findById(userId).exec();
         if (!user) {
-            return res
-                .status(404)
-                .json({ message: `User with userId ${userId} not found` });
+            return res.status(404).json({
+                message: `User with userId ${userId} not found`,
+                success: false,
+            });
         }
 
         // Check if user is the owner
         if (userId !== collection.owner.toString()) {
-            return res
-                .status(400)
-                .json({ message: "User is not the owner of the collection" });
+            return res.status(400).json({
+                message: "User is not the owner of the collection",
+                success: false,
+            });
         }
 
         // Check if friend is not added
@@ -143,7 +167,9 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
             return friendInArr.equals(friendId);
         });
         if (!friendInArr) {
-            return res.status(400).json({ message: "Friend not added" });
+            return res
+                .status(400)
+                .json({ message: "Friend not added", success: false });
         }
     }
 
@@ -154,7 +180,9 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
         return sharedCollectionInArr.equals(collectionId);
     });
     if (!collectionInSharedArr) {
-        return res.status(400).json({ message: "Collection not shared" });
+        return res
+            .status(400)
+            .json({ message: "Collection not shared", success: false });
     }
 
     // Remove shared collection
@@ -172,6 +200,7 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
 
     res.json({
         message: "Collection unshared",
+        success: true,
     });
 });
 

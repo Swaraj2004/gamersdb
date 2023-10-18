@@ -7,19 +7,22 @@ async function validator(userId, collectionId) {
     // Check if user exists
     const user = await User.findById(userId).lean().exec();
     if (!user) {
-        return { error: { message: "User not found" } };
+        return { error: { message: "User not found", success: false } };
     }
 
     // Check if collection exists
     const collection = await Collection.findById(collectionId).exec();
     if (!collection) {
-        return { error: { message: "Collection not found" } };
+        return { error: { message: "Collection not found", success: false } };
     }
 
     // Check if user is the owner of the collection
     if (userId !== collection.owner.toString()) {
         return {
-            error: { message: "User is not the owner of the collection" },
+            error: {
+                message: "User is not the owner of the collection",
+                success: false,
+            },
         };
     }
 
@@ -34,7 +37,9 @@ const getAllGames = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!userId || !collectionId) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res
+            .status(400)
+            .json({ message: "All fields are required", success: false });
     }
 
     const validation = await validator(userId, collectionId);
@@ -52,10 +57,12 @@ const getAllGames = asyncHandler(async (req, res) => {
 
     // If no games
     if (!games?.length) {
-        return res.status(200).json({ message: "No games are added" });
+        return res
+            .status(200)
+            .json({ message: "No games are added", success: false });
     }
 
-    res.json(games);
+    res.json({ result: games, success: true });
 });
 
 // @desc Add the game
@@ -66,7 +73,9 @@ const addGame = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!userId || !collectionId || !name || !slug || !genre) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res
+            .status(400)
+            .json({ message: "All fields are required", success: false });
     }
 
     const validation = await validator(userId, collectionId);
@@ -90,13 +99,15 @@ const addGame = asyncHandler(async (req, res) => {
             collection.games.push(duplicate);
             await collection.save();
         } else {
-            return res
-                .status(400)
-                .json({ message: "Game already exists in the collection" });
+            return res.status(400).json({
+                message: "Game already exists in the collection",
+                success: false,
+            });
         }
 
         res.json({
             message: `New game ${duplicate.name} added`,
+            success: true,
         });
     }
 
@@ -112,6 +123,7 @@ const addGame = asyncHandler(async (req, res) => {
 
     res.json({
         message: `New game ${game.name} added`,
+        success: true,
     });
 });
 
@@ -123,7 +135,9 @@ const removeGame = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!userId || !collectionId || !slug) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res
+            .status(400)
+            .json({ message: "All fields are required", success: false });
     }
 
     const validation = await validator(userId, collectionId);
@@ -136,13 +150,17 @@ const removeGame = asyncHandler(async (req, res) => {
 
     const game = await Game.findOne({ slug }).exec();
     if (!game) {
-        return res.status(404).json({ message: "Game not found" });
+        return res
+            .status(404)
+            .json({ message: "Game not found", success: false });
     }
 
     const gameId = game._id;
     // Check if game is not added
     if (!collection.games.includes(gameId)) {
-        return res.status(400).json({ message: "Game not added" });
+        return res
+            .status(400)
+            .json({ message: "Game not added", success: false });
     }
 
     // Remove game
@@ -153,6 +171,7 @@ const removeGame = asyncHandler(async (req, res) => {
 
     res.json({
         message: `Game ${game.name} removed`,
+        success: true,
     });
 });
 

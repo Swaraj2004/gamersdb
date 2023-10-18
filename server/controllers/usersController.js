@@ -12,7 +12,9 @@ const getUser = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!((username && pass) || (email && pass))) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res
+            .status(400)
+            .json({ message: "All fields are required", success: false });
     }
 
     // Check if user exists
@@ -23,7 +25,9 @@ const getUser = asyncHandler(async (req, res) => {
         user = await User.findOne({ email }).lean();
     }
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
     }
 
     // Check if password is correct
@@ -31,13 +35,14 @@ const getUser = asyncHandler(async (req, res) => {
     if (!passwordEquals) {
         return res.status(401).json({
             message: "Password is invalid",
+            success: false,
         });
     }
 
     // Remove password and document version
     const { password, __v, ...data } = user;
 
-    res.json(data);
+    res.json({ result: data, success: true });
 });
 
 // @desc Create Register user
@@ -48,7 +53,9 @@ const createNewUser = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!username || !email || !password) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res
+            .status(400)
+            .json({ message: "All fields are required", success: false });
     }
 
     // Check if username valid
@@ -63,6 +70,7 @@ const createNewUser = asyncHandler(async (req, res) => {
         return res.status(401).json({
             message:
                 "Username is invalid. It should contain only letters, numbers, and underscores",
+            success: false,
         });
     }
 
@@ -77,6 +85,7 @@ const createNewUser = asyncHandler(async (req, res) => {
     if (!isValidEmail(email)) {
         return res.status(401).json({
             message: "Email is invalid",
+            success: false,
         });
     }
 
@@ -84,17 +93,22 @@ const createNewUser = asyncHandler(async (req, res) => {
     if (password.length < 8) {
         return res.status(400).json({
             message: "The password needs to be at least 8 characters long",
+            success: false,
         });
     }
 
     // Check for duplicate username and email
     const duplicateUser = await User.findOne({ username }).lean().exec();
     if (duplicateUser) {
-        return res.status(409).json({ message: "Username already exists" });
+        return res
+            .status(409)
+            .json({ message: "Username already exists", success: false });
     }
     const duplicateEmail = await User.findOne({ email }).lean().exec();
     if (duplicateEmail) {
-        return res.status(409).json({ message: "Email already used" });
+        return res
+            .status(409)
+            .json({ message: "Email already used", success: false });
     }
 
     // Hash password
@@ -107,6 +121,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 
     res.status(201).json({
         message: `New user ${user.username} created`,
+        success: true,
     });
 });
 
@@ -118,15 +133,18 @@ const updateUser = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!id || !username || !email) {
-        return res
-            .status(400)
-            .json({ message: "All fields except password are required" });
+        return res.status(400).json({
+            message: "All fields except password are required",
+            success: false,
+        });
     }
 
     // Check if user exists to update
     const user = await User.findById(id).exec();
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
     }
 
     // Check for duplicate
@@ -134,13 +152,17 @@ const updateUser = asyncHandler(async (req, res) => {
 
     // Allow updates to the original user
     if (duplicate && duplicate?._id.toString() !== id) {
-        return res.status(409).json({ message: "Username already exists" });
+        return res
+            .status(409)
+            .json({ message: "Username already exists", success: false });
     }
 
     if (profileImg) {
         // Image validation
         if (!isBase64(profileImg, { allowMime: true, allowEmpty: false })) {
-            return res.status(400).json({ message: "Invalid image" });
+            return res
+                .status(400)
+                .json({ message: "Invalid image", success: false });
         }
         user.profileImg = profileImg;
     }
@@ -156,6 +178,7 @@ const updateUser = asyncHandler(async (req, res) => {
 
     res.json({
         message: `User ${updatedUser.username} updated`,
+        success: true,
     });
 });
 
@@ -167,13 +190,17 @@ const deleteUser = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!id || !pass) {
-        return res.status(400).json({ message: "User ID Required" });
+        return res
+            .status(400)
+            .json({ message: "User ID Required", success: false });
     }
 
     // Check if user exists to delete
     const user = await User.findById(id).exec();
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
     }
 
     // Check if password is correct
@@ -181,6 +208,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     if (!passwordEquals) {
         return res.status(401).json({
             message: "Password is invalid",
+            success: false,
         });
     }
 
@@ -194,6 +222,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 
     res.json({
         message: `User ${deletedUser.username} deleted`,
+        success: true,
     });
 });
 

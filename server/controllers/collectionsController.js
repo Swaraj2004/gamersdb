@@ -11,7 +11,9 @@ const getAllCollections = asyncHandler(async (req, res) => {
     // Check if user exists
     const user = await User.findById(userId).exec();
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
     }
 
     // Get all collections
@@ -22,10 +24,12 @@ const getAllCollections = asyncHandler(async (req, res) => {
 
     // If no collections
     if (!collections?.length) {
-        return res.status(200).json({ message: "No collections found" });
+        return res
+            .status(200)
+            .json({ message: "No collections found", success: false });
     }
 
-    res.json(collections);
+    res.json({ result: collections, success: true });
 });
 
 // @desc Create a collection
@@ -36,13 +40,17 @@ const createNewCollection = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!userId || !name) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res
+            .status(400)
+            .json({ message: "All fields are required", success: false });
     }
 
     // Check if user exists
     const user = await User.findById(userId).exec();
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
     }
 
     // Check for duplicate collection name
@@ -54,7 +62,7 @@ const createNewCollection = asyncHandler(async (req, res) => {
     if (duplicate) {
         return res
             .status(409)
-            .json({ message: "Collection name already used" });
+            .json({ message: "Collection name already used", success: false });
     }
 
     // Create and store new collection
@@ -69,8 +77,9 @@ const createNewCollection = asyncHandler(async (req, res) => {
     await user.save();
 
     res.json({
+        result: collection,
         message: `New collection created`,
-        collection,
+        success: true,
     });
 });
 
@@ -82,26 +91,33 @@ const updateCollection = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!id || !name || !userId) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res
+            .status(400)
+            .json({ message: "All fields are required", success: false });
     }
 
     // Check if collection exists to update
     const collection = await Collection.findById(id).exec();
     if (!collection) {
-        return res.status(404).json({ message: "Collection not found" });
+        return res
+            .status(404)
+            .json({ message: "Collection not found", success: false });
     }
 
     // Check if user exists
     const user = await User.findById(userId).exec();
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
     }
 
     // Check if user is owner of the collection
     if (userId !== collection.owner.toString()) {
-        return res
-            .status(400)
-            .json({ message: "User is not the owner of the collection" });
+        return res.status(400).json({
+            message: "User is not the owner of the collection",
+            success: false,
+        });
     }
 
     // Check for duplicate collection name
@@ -115,7 +131,7 @@ const updateCollection = asyncHandler(async (req, res) => {
     if (duplicate && duplicate?._id.toString() !== id) {
         return res
             .status(409)
-            .json({ message: "Collection name already used" });
+            .json({ message: "Collection name already used", success: false });
     }
 
     collection.name = name;
@@ -123,8 +139,9 @@ const updateCollection = asyncHandler(async (req, res) => {
     const updatedCollection = await collection.save();
 
     res.json({
-        message: `Collection name ${updatedCollection.name} updated`,
-        updatedCollection,
+        result: updatedCollection,
+        message: `Collection ${updatedCollection.name} updated`,
+        success: true,
     });
 });
 
@@ -136,26 +153,33 @@ const deleteCollection = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!id || !userId) {
-        return res.status(400).json({ message: "Collection ID Required" });
+        return res
+            .status(400)
+            .json({ message: "Collection ID Required", success: false });
     }
 
     // Check if collection exists to delete
     const collection = await Collection.findById(id).exec();
     if (!collection) {
-        return res.status(404).json({ message: "Collection not found" });
+        return res
+            .status(404)
+            .json({ message: "Collection not found", success: false });
     }
 
     // Check if user exists
     const user = await User.findById(userId).exec();
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
     }
 
     // Check if user is owner of the collection
     if (userId !== collection.owner.toString()) {
-        return res
-            .status(400)
-            .json({ message: "User is not the owner of the collection" });
+        return res.status(400).json({
+            message: "User is not the owner of the collection",
+            success: false,
+        });
     }
 
     // Remove collection
@@ -166,8 +190,9 @@ const deleteCollection = asyncHandler(async (req, res) => {
     const deletedCollection = await collection.deleteOne();
 
     res.json({
-        message: `Collection ${deletedCollection.name} with ID ${deletedCollection._id} deleted`,
-        deletedCollection,
+        result: deletedCollection,
+        message: `Collection ${deletedCollection.name} deleted`,
+        success: true,
     });
 });
 
@@ -179,7 +204,9 @@ const getCollectionSharedWith = asyncHandler(async (req, res) => {
 
     // Confirm data
     if (!id || !userId) {
-        return res.status(400).json({ message: "Collection ID Required" });
+        return res
+            .status(400)
+            .json({ message: "Collection ID Required", success: false });
     }
 
     // Check if collection exists to delete
@@ -187,20 +214,25 @@ const getCollectionSharedWith = asyncHandler(async (req, res) => {
         .populate("sharedWith")
         .lean();
     if (!collection) {
-        return res.status(404).json({ message: "Collection not found" });
+        return res
+            .status(404)
+            .json({ message: "Collection not found", success: false });
     }
 
     // Check if user exists
     const user = await User.findById(userId).lean();
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
     }
 
     // Check if user is owner of the collection
     if (userId !== collection.owner.toString()) {
-        return res
-            .status(400)
-            .json({ message: "User is not the owner of the collection" });
+        return res.status(400).json({
+            message: "User is not the owner of the collection",
+            success: false,
+        });
     }
 
     // Get all users to whom the collection is shared
@@ -213,12 +245,13 @@ const getCollectionSharedWith = asyncHandler(async (req, res) => {
 
     // If no shared collections
     if (!sharedWith?.length) {
-        return res
-            .status(200)
-            .json({ message: "Collection is not shared with anyone" });
+        return res.status(200).json({
+            message: "Collection is not shared with anyone",
+            success: false,
+        });
     }
 
-    res.json(sharedWith);
+    res.json({ result: sharedWith, success: true });
 });
 
 module.exports = {
