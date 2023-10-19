@@ -6,9 +6,19 @@ const client = igdb(
 );
 
 // @desc Get recently released and upcoming games
-// @route GET games/recent_and_upcoming
+// @route GET games/recent_and_upcoming/:limit
 // @access Public
 const getAllRecentAndUpcommingGames = asyncHandler(async (req, res) => {
+    const limit = req.params.limit;
+
+    // Check data
+    if (!limit) {
+        return res.status(400).json({
+            message: "Page limit is required",
+            success: false,
+        });
+    }
+
     // Current time
     const now = parseInt(Date.now() / 1000);
 
@@ -18,15 +28,19 @@ const getAllRecentAndUpcommingGames = asyncHandler(async (req, res) => {
             igdb()
                 .query("games", "recent-releases")
                 .fields("name, cover.url, slug")
-                .where(`first_release_date < ${now}`)
+                .where(
+                    `first_release_date < ${now} & parent_game = null & version_parent = null`
+                )
                 .sort("first_release_date desc")
-                .limit(20),
+                .limit(limit),
             igdb()
                 .query("games", "coming-soon")
                 .fields("name, cover.url, slug")
-                .where(`first_release_date > ${now}`)
+                .where(
+                    `first_release_date > ${now} & parent_game = null & version_parent = null`
+                )
                 .sort("first_release_date asc")
-                .limit(20),
+                .limit(limit),
         ])
         .request("/multiquery");
 
@@ -47,7 +61,7 @@ const getAllRecentAndUpcommingGames = asyncHandler(async (req, res) => {
 });
 
 // @desc Get games
-// @route GET games/search
+// @route POST games/search
 // @access Public
 const searchGames = asyncHandler(async (req, res) => {
     const { name, platforms, genres, minRating } = req.body;
@@ -102,10 +116,10 @@ const searchGames = asyncHandler(async (req, res) => {
 });
 
 // @desc Get game data
-// @route GET games/gamedata
+// @route GET games/gamedata/:slug
 // @access Public
 const getGameData = asyncHandler(async (req, res) => {
-    const { slug } = req.body;
+    const slug = req.params.slug;
 
     // Confirm data
     if (!slug) {

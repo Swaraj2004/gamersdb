@@ -3,10 +3,10 @@ const FriendRequest = require("../models/FriendRequest");
 const asyncHandler = require("express-async-handler");
 
 // @desc Get all friends
-// @route GET /user/friends
+// @route GET /user/friends/:uid
 // @access Private
 const getAllFriends = asyncHandler(async (req, res) => {
-    const { userId } = req.body;
+    const userId = req.params.uid;
 
     // Confirm data
     if (!userId) {
@@ -111,10 +111,10 @@ const sendRequest = asyncHandler(async (req, res) => {
 });
 
 // @desc Get sent and recieved requests
-// @route GET /user/friend/requests
+// @route GET /user/friend/requests/:uid
 // @access Private
 const getRequests = asyncHandler(async (req, res) => {
-    const { userId } = req.body;
+    const userId = req.params.uid;
 
     // Confirm data
     if (!userId) {

@@ -7,6 +7,7 @@ const newsapi = new NewsAPI(process.env.NEWS_API_KEY);
 const getNews = (req, res) => {
     const { limit, page } = req.body;
 
+    // Check data
     if (!limit) {
         return res.status(400).json({
             message: "Page limit is required",

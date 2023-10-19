@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const isBase64 = require("is-base64");
 
 // @desc Login user
-// @route GET /user
+// @route POST /user/login
 // @access Private
 const getUser = asyncHandler(async (req, res) => {
     const { username, email, password: pass } = req.body;

@@ -30,7 +30,7 @@ async function validator(userId, collectionId) {
 }
 
 // @desc Get all games
-// @route GET /user/collection/games
+// @route POST /user/collection/games
 // @access Private
 const getAllGames = asyncHandler(async (req, res) => {
     const { userId, collectionId } = req.body;
@@ -66,7 +66,7 @@ const getAllGames = asyncHandler(async (req, res) => {
 });
 
 // @desc Add the game
-// @route POST /user/collection/games
+// @route POST /user/collection/addgame
 // @access Private
 const addGame = asyncHandler(async (req, res) => {
     const { userId, collectionId, name, slug, genre, coverUrl } = req.body;
@@ -128,7 +128,7 @@ const addGame = asyncHandler(async (req, res) => {
 });
 
 // @desc Remove the game
-// @route DELETE /user/collection/games
+// @route DELETE /user/collection/removegame
 // @access Private
 const removeGame = asyncHandler(async (req, res) => {
     const { userId, collectionId, slug } = req.body;

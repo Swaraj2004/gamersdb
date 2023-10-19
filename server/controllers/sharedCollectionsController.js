@@ -3,10 +3,10 @@ const Collection = require("../models/Collection");
 const asyncHandler = require("express-async-handler");
 
 // @desc Get all shared collections
-// @route GET /user/collection/share
+// @route GET /user/collection/share/:uid
 // @access Private
 const getAllSharedCollections = asyncHandler(async (req, res) => {
-    const { userId } = req.body;
+    const userId = req.params.uid;
 
     // Confirm data
     if (!userId) {

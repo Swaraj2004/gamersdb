@@ -3,10 +3,10 @@ const Collection = require("../models/Collection");
 const asyncHandler = require("express-async-handler");
 
 // @desc Get all collections
-// @route GET /user/collections
+// @route GET /user/collections/:uid
 // @access Private
 const getAllCollections = asyncHandler(async (req, res) => {
-    const { userId } = req.body;
+    const userId = req.params.uid;
 
     // Check if user exists
     const user = await User.findById(userId).exec();
@@ -197,7 +197,7 @@ const deleteCollection = asyncHandler(async (req, res) => {
 });
 
 // @desc Get all users to whom collection is shared
-// @route GET /user/collection/sharedwith
+// @route POST /user/collection/sharedwith
 // @access Private
 const getCollectionSharedWith = asyncHandler(async (req, res) => {
     const { id, userId } = req.body;
