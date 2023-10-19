@@ -15,6 +15,7 @@ const getNews = (req, res) => {
         });
     }
 
+    // Fetch news data
     newsapi.v2
         .everything({
             domains: "eurogamer.net,kotaku.com",
@@ -23,7 +24,16 @@ const getNews = (req, res) => {
             page: page || 1,
         })
         .then((response) => {
-            res.json({ result: response.articles, success: true });
+            // Format objects in the array
+            const formattedResult = response.articles.map((obj) => {
+                const { source, content, ...rest } = obj;
+                return {
+                    source: source.name,
+                    ...rest,
+                };
+            });
+
+            res.json({ result: formattedResult, success: true });
         })
         .catch((error) => {
             res.status(500).json({ message: error.message, success: false });
