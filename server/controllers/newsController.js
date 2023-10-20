@@ -18,7 +18,7 @@ const getNews = (req, res) => {
     // Fetch news data
     newsapi.v2
         .everything({
-            domains: "eurogamer.net,kotaku.com",
+            domains: "eurogamer.net,kotaku.com,destructoid.com",
             language: "en",
             pageSize: limit,
             page: page || 1,
