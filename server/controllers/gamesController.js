@@ -51,6 +51,7 @@ const getAllRecentAndUpcommingGames = asyncHandler(async (req, res) => {
             id: game.id,
             name: game.name,
             slug: game.slug,
+            rating: game.aggregated_rating || null,
             cover_url: game.cover
                 ? `https:${game.cover.url}`.replace("thumb", "cover_big")
                 : null,
