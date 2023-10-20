@@ -1,6 +1,8 @@
-import "./globals.css";
+import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import Navbar from "@/components/Navbar";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -10,7 +12,7 @@ const inter = Inter({
 export const metadata: Metadata = {
     title: "GamersDB",
     description:
-        "Games Database Collection to discover, collect and share with friends.",
+        "Games Database to discover, collect and share games with friends.",
 };
 
 export default function RootLayout({
@@ -20,7 +22,18 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" className={inter.className}>
-            <body>{children}</body>
+            <body>
+                <ThemeProvider
+                    attribute="class"
+                    defaultTheme="dark"
+                    enableSystem
+                    disableTransitionOnChange
+                    storageKey="gamersdb-theme"
+                >
+                    {children}
+                    <Navbar />
+                </ThemeProvider>
+            </body>
         </html>
     );
 }
