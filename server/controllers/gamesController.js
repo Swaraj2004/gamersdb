@@ -173,7 +173,7 @@ const getGameData = asyncHandler(async (req, res) => {
 
     // Find cover url
     const cover_url = game.cover
-        ? `https:${game.cover.url}`.replace("thumb", "cover_big")
+        ? `https:${game.cover.url}`.replace("thumb", "720p")
         : null;
 
     // Convert timestamp to human readable
