@@ -97,7 +97,7 @@ const searchGames = asyncHandler(async (req, res) => {
     // Fetch data
     const response = await igdb()
         .fields("name, cover.url, slug, aggregated_rating")
-        .limit(50)
+        .limit(100)
         .search(name)
         .where(query)
         .request("/games");
