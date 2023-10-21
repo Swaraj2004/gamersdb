@@ -272,7 +272,7 @@ const getGameData = asyncHandler(async (req, res) => {
         16: "epicgames",
         17: "gog",
     };
-    const websites = game.websites
+    let websites = game.websites
         ? game.websites
               .filter((website) =>
                   [1, 13, 15, 16, 17].includes(website.category)
@@ -284,7 +284,7 @@ const getGameData = asyncHandler(async (req, res) => {
                   };
               })
         : null;
-    if (websites.length === 0) websites = null;
+    if (websites !== null && websites.length === 0) websites = null;
 
     // Format fetched data
     const formattedData = {
