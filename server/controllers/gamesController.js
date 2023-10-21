@@ -27,7 +27,7 @@ const getAllRecentAndUpcommingGames = asyncHandler(async (req, res) => {
         .multi([
             igdb()
                 .query("games", "recent-releases")
-                .fields("name, cover.url, slug")
+                .fields("name, cover.url, slug, aggregated_rating")
                 .where(
                     `first_release_date < ${now} & parent_game = null & version_parent = null`
                 )
@@ -35,7 +35,7 @@ const getAllRecentAndUpcommingGames = asyncHandler(async (req, res) => {
                 .limit(limit),
             igdb()
                 .query("games", "coming-soon")
-                .fields("name, cover.url, slug")
+                .fields("name, cover.url, slug, aggregated_rating")
                 .where(
                     `first_release_date > ${now} & parent_game = null & version_parent = null`
                 )
