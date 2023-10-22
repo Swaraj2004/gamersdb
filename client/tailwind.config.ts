@@ -73,6 +73,9 @@ module.exports = {
             aspectRatio: {
                 "40/21": "40 / 21",
             },
+            dropShadow: {
+                dark: "-5px 5px 8px rgba(0, 0, 0, 0.5)",
+            },
         },
     },
     plugins: [require("tailwindcss-animate")],

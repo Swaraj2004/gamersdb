@@ -10,16 +10,20 @@ import {
     DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 const ProfileMenu = () => {
+    const { data: session, status } = useSession();
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button
                     variant="ghost"
-                    className="relative w-8 h-8 my-auto rounded-full"
+                    className="rounded-full my-auto w-10 h-10"
                 >
-                    <Avatar className="w-8 h-8">
+                    <Avatar>
                         <AvatarImage src="" alt="profile-img" />
                         <AvatarFallback>SC</AvatarFallback>
                     </Avatar>
@@ -28,12 +32,16 @@ const ProfileMenu = () => {
             <DropdownMenuContent className="w-56 mt-2" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">
-                            Swaraj
-                        </p>
-                        <p className="text-xs leading-none text-muted-foreground">
-                            swaraj@mail.com
-                        </p>
+                        {status === "authenticated" && session?.user && (
+                            <>
+                                <p className="text-sm font-medium leading-none mb-2">
+                                    {session.user.username}
+                                </p>
+                                <p className="text-xs leading-none text-muted-foreground">
+                                    {session.user.email}
+                                </p>
+                            </>
+                        )}
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
@@ -43,7 +51,9 @@ const ProfileMenu = () => {
                     <DropdownMenuItem>Collections</DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Log out</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => signOut()}>
+                    Log out
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     );

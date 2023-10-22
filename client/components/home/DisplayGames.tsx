@@ -1,22 +1,16 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Game } from "@/types/game";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Splide, SplideSlide } from "@splidejs/react-splide";
 import "@splidejs/splide/dist/css/themes/splide-default.min.css";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
+import Link from "next/link";
 
 interface GamesProps {
     games: Game[];
     title: String;
-}
-
-interface Game {
-    id: number;
-    name: string;
-    slug: string;
-    cover_url: string | null;
 }
 
 export const splideOptions: any = {

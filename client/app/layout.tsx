@@ -1,8 +1,10 @@
+import Navbar from "@/components/shared/Navbar";
+import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import Navbar from "@/components/Navbar";
+import { Toaster } from "sonner";
+import AuthProvider from "@/context/AuthProvider";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -23,16 +25,19 @@ export default function RootLayout({
     return (
         <html lang="en" className={inter.className}>
             <body>
-                <ThemeProvider
-                    attribute="class"
-                    defaultTheme="dark"
-                    enableSystem
-                    disableTransitionOnChange
-                    storageKey="gamersdb-theme"
-                >
-                    {children}
-                    <Navbar />
-                </ThemeProvider>
+                <AuthProvider>
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="dark"
+                        enableSystem
+                        disableTransitionOnChange
+                        storageKey="gamersdb-theme"
+                    >
+                        {children}
+                        <Navbar />
+                        <Toaster richColors />
+                    </ThemeProvider>
+                </AuthProvider>
             </body>
         </html>
     );

@@ -5,6 +5,7 @@ const nextConfig = {
             "images.igdb.com",
             "assetsio.reedpopcdn.com",
             "i.kinja-img.com",
+            "www.destructoid.com",
         ],
     },
 };

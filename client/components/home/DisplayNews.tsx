@@ -1,10 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import Image from "next/image";
-import { ChevronRightIcon } from "@radix-ui/react-icons";
-import { Splide, SplideSlide } from "@splidejs/react-splide";
-import "@splidejs/splide/dist/css/themes/splide-default.min.css";
 import {
     Card,
     CardContent,
@@ -13,20 +8,16 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { News } from "@/types/news";
+import { ChevronRightIcon } from "@radix-ui/react-icons";
+import { Splide, SplideSlide } from "@splidejs/react-splide";
+import "@splidejs/splide/dist/css/themes/splide-default.min.css";
+import Image from "next/image";
+import Link from "next/link";
 
 interface NewsProps {
-    newsArr: NewsArticle[];
+    newsArr: News[];
     title: String;
-}
-
-interface NewsArticle {
-    source: string;
-    author: string;
-    title: string;
-    description: string;
-    url: string;
-    urlToImage: string;
-    publishedAt: string;
 }
 
 export const splideOptions: any = {
@@ -54,7 +45,7 @@ const DisplayNews: React.FC<NewsProps> = ({ newsArr, title }) => {
         return date.toLocaleDateString("en-US", options);
     }
 
-    const recentList = newsArr.map((news: NewsArticle) => (
+    const recentList = newsArr.map((news: News) => (
         <SplideSlide key={news.url}>
             <Link href={news.url} target="_blank">
                 <Card className="flex flex-col my-2 min-h-[493px] sm:min-h-[484px] w-72 sm:w-96 bg-slate-200 dark:bg-slate-900 border-0 drop-shadow-md dark:border">
