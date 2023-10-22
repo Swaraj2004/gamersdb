@@ -8,10 +8,10 @@ const isBase64 = require("is-base64");
 // @route POST /user/login
 // @access Private
 const getUser = asyncHandler(async (req, res) => {
-    const { username, email, password: pass } = req.body;
+    const { username: name, email: mail, password: pass } = req.body;
 
     // Confirm data
-    if (!((username && pass) || (email && pass))) {
+    if (!((name && pass) || (mail && pass))) {
         return res
             .status(400)
             .json({ message: "All fields are required", success: false });
@@ -19,10 +19,10 @@ const getUser = asyncHandler(async (req, res) => {
 
     // Check if user exists
     let user;
-    if (username) {
-        user = await User.findOne({ username }).lean();
-    } else if (email) {
-        user = await User.findOne({ email }).lean();
+    if (name) {
+        user = await User.findOne({ username: name }).lean();
+    } else if (mail) {
+        user = await User.findOne({ email: mail }).lean();
     }
     if (!user) {
         return res
@@ -39,8 +39,9 @@ const getUser = asyncHandler(async (req, res) => {
         });
     }
 
-    // Remove password and document version
-    const { password, __v, ...data } = user;
+    // Seprate data to send
+    const { _id, username, email, profileImg } = user;
+    const data = { _id, username, email, profileImg };
 
     res.json({ result: data, success: true });
 });
