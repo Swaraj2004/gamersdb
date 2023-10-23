@@ -17,7 +17,7 @@ const getAllFriends = asyncHandler(async (req, res) => {
 
     // Check if user exists
     const user = await User.findById(userId)
-        .populate("friends", "username")
+        .populate("friends", "username profileImg")
         .lean();
     if (!user) {
         return res
