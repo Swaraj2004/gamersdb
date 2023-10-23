@@ -201,7 +201,9 @@ const getGameData = asyncHandler(async (req, res) => {
         return `${month} ${day}, ${year}`;
     }
     // Set release date
-    const release_date = dateReadable(game.first_release_date) || null;
+    const release_date = game.first_release_date
+        ? dateReadable(game.first_release_date)
+        : null;
 
     // Find ESRB rating
     const ageRating = game.age_ratings
