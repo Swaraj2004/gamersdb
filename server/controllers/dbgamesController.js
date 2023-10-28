@@ -30,10 +30,10 @@ async function validator(userId, collectionId) {
 }
 
 // @desc Get all games
-// @route POST /user/collection/games
+// @route GET /user/collections/games
 // @access Private
 const getAllGames = asyncHandler(async (req, res) => {
-    const { userId, collectionId } = req.body;
+    const { uid: userId, collid: collectionId } = req.query;
 
     // Confirm data
     if (!userId || !collectionId) {
@@ -66,10 +66,17 @@ const getAllGames = asyncHandler(async (req, res) => {
 });
 
 // @desc Add the game
-// @route POST /user/collection/addgame
+// @route POST /user/collections/games/add
 // @access Private
 const addGame = asyncHandler(async (req, res) => {
-    const { userId, collectionId, name, slug, genre, coverUrl } = req.body;
+    const {
+        uid: userId,
+        collid: collectionId,
+        name,
+        slug,
+        genre,
+        coverUrl,
+    } = req.body;
 
     // Confirm data
     if (!userId || !collectionId || !name || !slug || !genre) {
@@ -128,10 +135,10 @@ const addGame = asyncHandler(async (req, res) => {
 });
 
 // @desc Remove the game
-// @route DELETE /user/collection/removegame
+// @route DELETE /user/collections/games/remove
 // @access Private
 const removeGame = asyncHandler(async (req, res) => {
-    const { userId, collectionId, slug } = req.body;
+    const { uid: userId, collid: collectionId, slug } = req.query;
 
     // Confirm data
     if (!userId || !collectionId || !slug) {

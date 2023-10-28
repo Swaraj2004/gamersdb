@@ -62,10 +62,10 @@ const getAllRecentAndUpcommingGames = asyncHandler(async (req, res) => {
 });
 
 // @desc Get games
-// @route POST games/search
+// @route GET games/search
 // @access Public
 const searchGames = asyncHandler(async (req, res) => {
-    const { name, platforms, genres, minRating } = req.body;
+    const { name, platforms, genres, minRating } = req.query;
 
     // Confirm data
     if (!name) {

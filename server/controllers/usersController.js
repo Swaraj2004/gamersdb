@@ -70,7 +70,7 @@ const createNewUser = asyncHandler(async (req, res) => {
     if (!isValidUsername(username)) {
         return res.status(401).json({
             message:
-                "Username is invalid. It should contain only letters, numbers, and underscores",
+                "Username is invalid. It should contain only letters, numbers, and underscores.",
             success: false,
         });
     }
@@ -93,7 +93,7 @@ const createNewUser = asyncHandler(async (req, res) => {
     // Check if password valid
     if (password.length < 8) {
         return res.status(400).json({
-            message: "The password needs to be at least 8 characters long",
+            message: "The password needs to be at least 8 characters long.",
             success: false,
         });
     }
@@ -118,10 +118,10 @@ const createNewUser = asyncHandler(async (req, res) => {
     const userObject = { username, email, password: hashedPwd };
 
     // Create and store new user
-    const user = await User.create(userObject);
+    await User.create(userObject);
 
     res.status(201).json({
-        message: `New user ${user.username} created`,
+        message: `User registered successfully`,
         success: true,
     });
 });
@@ -130,10 +130,10 @@ const createNewUser = asyncHandler(async (req, res) => {
 // @route PATCH /user
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
-    const { id, username, email, password, profileImg } = req.body;
+    const { uid: userId, username, email, password, profileImg } = req.body;
 
     // Confirm data
-    if (!id || !username || !email) {
+    if (!userId || !username || !email) {
         return res.status(400).json({
             message: "All fields except password are required",
             success: false,
@@ -141,7 +141,7 @@ const updateUser = asyncHandler(async (req, res) => {
     }
 
     // Check if user exists to update
-    const user = await User.findById(id).exec();
+    const user = await User.findById(userId).exec();
     if (!user) {
         return res
             .status(404)
@@ -152,7 +152,7 @@ const updateUser = asyncHandler(async (req, res) => {
     const duplicate = await User.findOne({ username }).lean().exec();
 
     // Allow updates to the original user
-    if (duplicate && duplicate?._id.toString() !== id) {
+    if (duplicate && duplicate?._id.toString() !== userId) {
         return res
             .status(409)
             .json({ message: "Username already exists", success: false });
@@ -175,10 +175,10 @@ const updateUser = asyncHandler(async (req, res) => {
     }
 
     // Update user
-    const updatedUser = await user.save();
+    await user.save();
 
     res.json({
-        message: `User ${updatedUser.username} updated`,
+        message: `User updated successfully`,
         success: true,
     });
 });
@@ -187,17 +187,17 @@ const updateUser = asyncHandler(async (req, res) => {
 // @route DELETE /user
 // @access Private
 const deleteUser = asyncHandler(async (req, res) => {
-    const { id, password: pass } = req.body;
+    const { uid: userId, password: pass } = req.query;
 
     // Confirm data
-    if (!id || !pass) {
+    if (!userId || !pass) {
         return res
             .status(400)
-            .json({ message: "User ID Required", success: false });
+            .json({ message: "All fields are required", success: false });
     }
 
     // Check if user exists to delete
-    const user = await User.findById(id).exec();
+    const user = await User.findById(userId).exec();
     if (!user) {
         return res
             .status(404)
@@ -215,14 +215,14 @@ const deleteUser = asyncHandler(async (req, res) => {
 
     // Delete collections of user
     await Collection.deleteMany({
-        owner: id,
+        owner: userId,
     });
 
     // Delete user
-    const deletedUser = await user.deleteOne();
+    await user.deleteOne();
 
     res.json({
-        message: `User ${deletedUser.username} deleted`,
+        message: `User deleted successfully`,
         success: true,
     });
 });

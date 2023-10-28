@@ -3,10 +3,10 @@ const Collection = require("../models/Collection");
 const asyncHandler = require("express-async-handler");
 
 // @desc Get all shared collections
-// @route GET /user/collection/share/:uid
+// @route GET /user/collections/shared
 // @access Private
 const getAllSharedCollections = asyncHandler(async (req, res) => {
-    const userId = req.params.uid;
+    const userId = req.query.uid;
 
     // Confirm data
     if (!userId) {
@@ -48,11 +48,69 @@ const getAllSharedCollections = asyncHandler(async (req, res) => {
     res.json({ result: shared, success: true });
 });
 
+// @desc Get all users to whom collection is shared
+// @route GET /user/collections/share
+// @access Private
+const getCollectionSharedWith = asyncHandler(async (req, res) => {
+    const { collid: collectionId, uid: userId } = req.query;
+
+    // Confirm data
+    if (!collectionId || !userId) {
+        return res
+            .status(400)
+            .json({ message: "All fields are required", success: false });
+    }
+
+    // Check if collection exists to delete
+    const collection = await Collection.findById(collectionId)
+        .populate("sharedWith")
+        .lean();
+    if (!collection) {
+        return res
+            .status(404)
+            .json({ message: "Collection not found", success: false });
+    }
+
+    // Check if user exists
+    const user = await User.findById(userId).lean();
+    if (!user) {
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
+    }
+
+    // Check if user is owner of the collection
+    if (userId !== collection.owner.toString()) {
+        return res.status(400).json({
+            message: "User is not the owner of the collection",
+            success: false,
+        });
+    }
+
+    // Get all users to whom the collection is shared
+    let sharedWith = collection.sharedWith.map((user) => {
+        return {
+            _id: user._id,
+            username: user.username,
+        };
+    });
+
+    // If no shared collections
+    if (!sharedWith?.length) {
+        return res.status(200).json({
+            message: "Collection is not shared with anyone",
+            success: false,
+        });
+    }
+
+    res.json({ result: sharedWith, success: true });
+});
+
 // @desc Share collection
-// @route POST /user/collection/share
+// @route POST /user/collections/share
 // @access Private
 const shareCollection = asyncHandler(async (req, res) => {
-    const { userId, friendId, collectionId } = req.body;
+    const { uid: userId, fid: friendId, collid: collectionId } = req.body;
 
     // Confirm data
     if (!userId || !friendId || !collectionId) {
@@ -115,10 +173,10 @@ const shareCollection = asyncHandler(async (req, res) => {
 });
 
 // @desc Remove shared collection
-// @route DELETE /user/collection/share
+// @route DELETE /user/collections/share
 // @access Private
 const removeSharedCollection = asyncHandler(async (req, res) => {
-    const { userId, friendId, collectionId } = req.body;
+    const { uid: userId, fid: friendId, collid: collectionId } = req.query;
 
     // Confirm data
     if (!friendId || !collectionId) {
@@ -208,4 +266,5 @@ module.exports = {
     getAllSharedCollections,
     shareCollection,
     removeSharedCollection,
+    getCollectionSharedWith,
 };

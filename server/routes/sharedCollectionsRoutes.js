@@ -3,10 +3,11 @@ const router = express.Router();
 const sharedCollectionsController = require("../controllers/sharedCollectionsController");
 
 router
-    .route("/user/collection/share/:uid")
+    .route("/user/collections/shared")
     .get(sharedCollectionsController.getAllSharedCollections);
 router
-    .route("/user/collection/share")
+    .route("/user/collections/share")
+    .get(sharedCollectionsController.getCollectionSharedWith)
     .post(sharedCollectionsController.shareCollection)
     .delete(sharedCollectionsController.removeSharedCollection);
 

@@ -3,10 +3,10 @@ const FriendRequest = require("../models/FriendRequest");
 const asyncHandler = require("express-async-handler");
 
 // @desc Get all friends
-// @route GET /user/friends/:uid
+// @route GET /user/friends
 // @access Private
 const getAllFriends = asyncHandler(async (req, res) => {
-    const userId = req.params.uid;
+    const userId = req.query.uid;
 
     // Confirm data
     if (!userId) {
@@ -39,15 +39,15 @@ const getAllFriends = asyncHandler(async (req, res) => {
 });
 
 // @desc Send friend request
-// @route POST /user/friend/add
+// @route POST /user/friends/add
 // @access Private
 const sendRequest = asyncHandler(async (req, res) => {
-    const { userId, friendName } = req.body;
+    const { uid: userId, fname: friendName } = req.body;
 
     // Confirm data
     if (!userId || !friendName) {
         return res.status(400).json({
-            message: "UserId and friendName required",
+            message: "All fields are required",
             success: false,
         });
     }
@@ -111,10 +111,10 @@ const sendRequest = asyncHandler(async (req, res) => {
 });
 
 // @desc Get sent and recieved requests
-// @route GET /user/friend/requests/:uid
+// @route GET /user/friends/requests
 // @access Private
 const getRequests = asyncHandler(async (req, res) => {
-    const userId = req.params.uid;
+    const userId = req.query.uid;
 
     // Confirm data
     if (!userId) {
@@ -131,22 +131,26 @@ const getRequests = asyncHandler(async (req, res) => {
             .json({ message: "User not found", success: false });
     }
 
-    const sentRequests = await FriendRequest.find({ sender: userId });
-    const receivedRequests = await FriendRequest.find({ recipient: userId });
+    const sentRequests = await FriendRequest.find({ sender: userId })
+        .populate("recipient", "username profileImg")
+        .lean();
+    const receivedRequests = await FriendRequest.find({ recipient: userId })
+        .populate("sender", "username profileImg")
+        .lean();
 
     res.json({ result: { sentRequests, receivedRequests }, success: true });
 });
 
 // @desc Accept friend request
-// @route POST /user/friend/accept
+// @route POST /user/friends/accept
 // @access Private
 const acceptRequest = asyncHandler(async (req, res) => {
-    const { userId, requestId } = req.body;
+    const { uid: userId, reqid: requestId } = req.body;
 
     // Confirm data
     if (!userId || !requestId) {
         return res.status(400).json({
-            message: "UserId and requestId is required",
+            message: "All fields are is required",
             success: false,
         });
     }
@@ -184,19 +188,22 @@ const acceptRequest = asyncHandler(async (req, res) => {
     // Delete the request
     await FriendRequest.findByIdAndDelete(requestId);
 
-    res.json({ message: "Friend request accepted", success: true });
+    res.json({
+        message: "Friend request accepted successfully",
+        success: true,
+    });
 });
 
 // @desc Reject friend request
-// @route POST /user/friend/reject
+// @route DELETE /user/friends/reject
 // @access Private
 const rejectRequest = asyncHandler(async (req, res) => {
-    const { userId, requestId } = req.body;
+    const { uid: userId, reqid: requestId } = req.query;
 
     // Confirm data
     if (!userId || !requestId) {
         return res.status(400).json({
-            message: "UserId and requestId is required",
+            message: "All fields are required",
             success: false,
         });
     }
@@ -226,14 +233,17 @@ const rejectRequest = asyncHandler(async (req, res) => {
     // Delete the request
     await FriendRequest.findByIdAndDelete(requestId);
 
-    res.json({ message: "Friend request rejected", success: true });
+    res.json({
+        message: "Friend request rejected successfully",
+        success: true,
+    });
 });
 
 // @desc Remove a friend
-// @route DELETE /user/friend/remove
+// @route DELETE /user/friends/remove
 // @access Private
 const removeFriend = asyncHandler(async (req, res) => {
-    const { userId, friendId } = req.body;
+    const { uid: userId, fid: friendId } = req.query;
 
     // Confirm data
     if (!userId || !friendId) {
@@ -273,7 +283,7 @@ const removeFriend = asyncHandler(async (req, res) => {
     await friend.save();
 
     res.json({
-        message: `Friend with username ${friend.username} removed`,
+        message: `Friend removed successfully`,
         success: true,
     });
 });
