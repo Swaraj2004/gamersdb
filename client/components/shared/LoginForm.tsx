@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -61,7 +61,11 @@ const LoginForm = () => {
                         <FormItem>
                             <FormLabel>Username</FormLabel>
                             <FormControl>
-                                <Input {...field} />
+                                <Input
+                                    type="text"
+                                    className="focus-visible:ring-0 focus-visible:border-primary border-2"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -74,7 +78,11 @@ const LoginForm = () => {
                         <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                                <Input type="password" {...field} />
+                                <Input
+                                    type="password"
+                                    className="focus-visible:ring-0 focus-visible:border-primary border-2"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

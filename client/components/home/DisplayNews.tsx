@@ -54,7 +54,6 @@ const DisplayNews: React.FC<NewsProps> = ({ newsArr, title }) => {
                             src={news.urlToImage}
                             width={1200}
                             height={675}
-                            sizes=""
                             quality={100}
                             className="object-cover hover:scale-105 hover:origin-center duration-300 ease-in-out"
                             draggable="false"

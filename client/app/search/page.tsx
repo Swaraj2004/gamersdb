@@ -1,22 +1,23 @@
 import SearchedGames from "@/components/search/SearchedGames";
+import ErrorMessage from "@/components/shared/ErrorMessage";
 import { SearchGameResponse } from "@/types/game";
-import ErrorMessage from "@/components/search/ErrorMessage";
 
-async function searchGames(query: string): Promise<SearchGameResponse> {
-    const res = await fetch(`${process.env.API_URL}/games/search`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: query }),
-        next: { revalidate: 60 * 60 * 4 },
-    });
+async function searchGames(name: string): Promise<SearchGameResponse> {
+    const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/games/search?name=${name}`,
+        {
+            next: { revalidate: 60 * 60 * 6 },
+        }
+    );
     if (!res.ok) {
         throw new Error("Failed to fetch data");
     }
     return res.json();
 }
 
-const Search = async ({ searchParams }: { searchParams: { q: string } }) => {
-    if (!searchParams.q) {
+const Search = async ({ searchParams }: { searchParams: { name: string } }) => {
+    console.log(searchParams.name);
+    if (!searchParams.name) {
         return (
             <ErrorMessage
                 message={
@@ -26,7 +27,7 @@ const Search = async ({ searchParams }: { searchParams: { q: string } }) => {
         );
     }
 
-    const searchRes = await searchGames(searchParams.q);
+    const searchRes = await searchGames(searchParams.name);
     const games = searchRes.result;
 
     if (!games || games.length === 0) {

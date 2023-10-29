@@ -8,9 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next-nprogress-bar";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
 const Navbar: React.FC = () => {
@@ -34,7 +34,7 @@ const Navbar: React.FC = () => {
         event: React.KeyboardEvent<HTMLInputElement>
     ) => {
         if (event.key === "Enter" && searchValue.trim() !== "") {
-            router.push(`/search?q=${searchValue.trim()}`);
+            router.push(`/search?name=${searchValue.trim()}`);
             ref.current?.blur();
         }
     };
@@ -61,7 +61,7 @@ const Navbar: React.FC = () => {
                     placeholder="Search games"
                     className={`transition ease-in-out duration-150 mx-2 w-[calc(100%-18px)] sm:mx-auto sm:max-w-md sm:my-auto rounded-full border-2 focus-visible:border-indigo-500 focus-visible:ring-0 ${
                         searchBtnState ? "translate-y-14" : "-translate-y-14"
-                    } sm:translate-y-0 dark:bg-slate-900 shadow-md sm:shadow-none absolute sm:static`}
+                    } sm:translate-y-0 bg-background dark:bg-slate-900 shadow-md sm:shadow-none absolute sm:static`}
                     value={searchValue}
                     onChange={handleSearchChange}
                     onKeyDown={handleSearchSubmit}

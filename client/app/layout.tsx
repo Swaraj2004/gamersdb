@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import AuthProvider from "@/context/AuthProvider";
+import ProgressBarProvider from "@/components/shared/ProgressBarProvider";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -33,9 +34,11 @@ export default function RootLayout({
                         disableTransitionOnChange
                         storageKey="gamersdb-theme"
                     >
-                        {children}
-                        <Navbar />
-                        <Toaster richColors />
+                        <ProgressBarProvider>
+                            <Navbar />
+                            {children}
+                            <Toaster richColors />
+                        </ProgressBarProvider>
                     </ThemeProvider>
                 </AuthProvider>
             </body>

@@ -7,7 +7,7 @@ const HeroSection = async () => {
     const session = await getServerSession();
 
     return (
-        <main className="py-14 grid grid-cols-1 md:grid-cols-2 max-w-5xl mx-auto">
+        <main className="py-16 grid grid-cols-1 md:grid-cols-2 max-w-5xl mx-auto">
             <div className="grid place-content-center text-center">
                 <div className="text-3xl font-bold from-purple-600 via-pink-600 to-blue-600 bg-gradient-to-r bg-clip-text text-transparent pb-4 max-w-2xl">
                     Discover, Collect and Share Your Game Collections

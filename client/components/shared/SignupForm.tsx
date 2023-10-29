@@ -71,7 +71,11 @@ const SignupForm = ({ setOpen }: SignupFormProps) => {
                         <FormItem>
                             <FormLabel>Username</FormLabel>
                             <FormControl>
-                                <Input {...field} />
+                                <Input
+                                    type="text"
+                                    className="focus-visible:ring-0 focus-visible:border-primary border-2"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -84,7 +88,11 @@ const SignupForm = ({ setOpen }: SignupFormProps) => {
                         <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                                <Input {...field} />
+                                <Input
+                                    type="text"
+                                    className="focus-visible:ring-0 focus-visible:border-primary border-2"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -97,7 +105,11 @@ const SignupForm = ({ setOpen }: SignupFormProps) => {
                         <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                                <Input type="password" {...field} />
+                                <Input
+                                    type="password"
+                                    className="focus-visible:ring-0 focus-visible:border-primary border-2"
+                                    {...field}
+                                />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

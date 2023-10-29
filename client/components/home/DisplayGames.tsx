@@ -54,7 +54,7 @@ const DisplayGames: React.FC<GamesProps> = ({ games, title }) => {
     ));
 
     return (
-        <div className="mb-6">
+        <div className="mb-10">
             <h3 className="text-xl font-semibold mb-2">
                 {title}
                 <ChevronRightIcon className="inline h-6 w-6 mb-1" />
