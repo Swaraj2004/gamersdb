@@ -3,7 +3,7 @@ const Collection = require("../models/Collection");
 const asyncHandler = require("express-async-handler");
 
 // @desc Get all shared collections
-// @route GET /user/collections/shared
+// @route GET /user/collections/share
 // @access Private
 const getAllSharedCollections = asyncHandler(async (req, res) => {
     const userId = req.query.uid;
@@ -49,7 +49,7 @@ const getAllSharedCollections = asyncHandler(async (req, res) => {
 });
 
 // @desc Get all users to whom collection is shared
-// @route GET /user/collections/share
+// @route GET /user/collections/share/users
 // @access Private
 const getCollectionSharedWith = asyncHandler(async (req, res) => {
     const { collid: collectionId, uid: userId } = req.query;
@@ -107,7 +107,7 @@ const getCollectionSharedWith = asyncHandler(async (req, res) => {
 });
 
 // @desc Share collection
-// @route POST /user/collections/share
+// @route POST /user/collections/share/users
 // @access Private
 const shareCollection = asyncHandler(async (req, res) => {
     const { uid: userId, fid: friendId, collid: collectionId } = req.body;
@@ -173,7 +173,7 @@ const shareCollection = asyncHandler(async (req, res) => {
 });
 
 // @desc Remove shared collection
-// @route DELETE /user/collections/share
+// @route DELETE /user/collections/share/users
 // @access Private
 const removeSharedCollection = asyncHandler(async (req, res) => {
     const { uid: userId, fid: friendId, collid: collectionId } = req.query;

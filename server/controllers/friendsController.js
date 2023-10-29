@@ -39,7 +39,7 @@ const getAllFriends = asyncHandler(async (req, res) => {
 });
 
 // @desc Send friend request
-// @route POST /user/friends/add
+// @route POST /user/friends/requests
 // @access Private
 const sendRequest = asyncHandler(async (req, res) => {
     const { uid: userId, fname: friendName } = req.body;
@@ -142,7 +142,7 @@ const getRequests = asyncHandler(async (req, res) => {
 });
 
 // @desc Accept friend request
-// @route POST /user/friends/accept
+// @route POST /user/friends/requests/accept
 // @access Private
 const acceptRequest = asyncHandler(async (req, res) => {
     const { uid: userId, reqid: requestId } = req.body;
@@ -195,7 +195,7 @@ const acceptRequest = asyncHandler(async (req, res) => {
 });
 
 // @desc Reject friend request
-// @route DELETE /user/friends/reject
+// @route DELETE /user/friends/requests/reject
 // @access Private
 const rejectRequest = asyncHandler(async (req, res) => {
     const { uid: userId, reqid: requestId } = req.query;

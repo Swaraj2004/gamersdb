@@ -27,7 +27,7 @@ app.use(favicon(path.join(__dirname, "/public/favicon.ico")));
 
 app.use(require("./routes/root"));
 app.use(require("./routes/userRoutes"));
-app.use(require("./routes/friendRoutes"));
+app.use(require("./routes/friendsRoutes"));
 app.use(require("./routes/collectionRoutes"));
 app.use(require("./routes/dbgamesRoutes"));
 app.use(require("./routes/sharedCollectionsRoutes"));

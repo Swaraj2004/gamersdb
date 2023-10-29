@@ -66,7 +66,7 @@ const getAllGames = asyncHandler(async (req, res) => {
 });
 
 // @desc Add the game
-// @route POST /user/collections/games/add
+// @route POST /user/collections/games
 // @access Private
 const addGame = asyncHandler(async (req, res) => {
     const {
@@ -135,7 +135,7 @@ const addGame = asyncHandler(async (req, res) => {
 });
 
 // @desc Remove the game
-// @route DELETE /user/collections/games/remove
+// @route DELETE /user/collections/games
 // @access Private
 const removeGame = asyncHandler(async (req, res) => {
     const { uid: userId, collid: collectionId, slug } = req.query;
