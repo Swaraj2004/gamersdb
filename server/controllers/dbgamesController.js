@@ -113,7 +113,7 @@ const addGame = asyncHandler(async (req, res) => {
         }
 
         res.json({
-            message: `New game ${duplicate.name} added`,
+            message: `Game added to the collection successfully`,
             success: true,
         });
     }
@@ -177,7 +177,7 @@ const removeGame = asyncHandler(async (req, res) => {
     await collection.save();
 
     res.json({
-        message: `Game ${game.name} removed`,
+        message: `Game removed successfully`,
         success: true,
     });
 });
