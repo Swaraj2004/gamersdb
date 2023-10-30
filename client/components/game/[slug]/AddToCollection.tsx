@@ -31,7 +31,6 @@ const AddToCollection = ({
         isLoading,
         error,
     } = useSWR(uid && `/user/collections?uid=${uid}`, getCollections);
-    console.log(collections?.result);
 
     const handleAdd = async (reqbody: {
         userId: string;
@@ -43,7 +42,6 @@ const AddToCollection = ({
     }) => {
         try {
             const data = await addGame(reqbody);
-            console.log(data);
             toast.success(data.message);
         } catch (error: any) {
             toast.error(error.response.data.message);

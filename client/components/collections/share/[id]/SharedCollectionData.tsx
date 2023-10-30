@@ -1,18 +1,13 @@
 "use client";
 
-import {
-    getCollection,
-    removeGame,
-} from "@/app/api/collections/collectionsApi";
+import { getSharedCollection } from "@/app/api/collections/collectionsApi";
 import ErrorMessage from "@/components/shared/ErrorMessage";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronRightIcon, TrashIcon } from "@radix-ui/react-icons";
+import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next-nprogress-bar";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { toast } from "sonner";
 import useSWR from "swr";
 
 const CollectionData = () => {
@@ -26,11 +21,9 @@ const CollectionData = () => {
         data: colldata,
         isLoading,
         error,
-        mutate,
     } = useSWR(
-        uid && `/user/collection?uid=${uid}&collid=${collid}`,
-        getCollection,
-        { revalidateOnFocus: false }
+        uid && `/user/collection/share?uid=${uid}&collid=${collid}`,
+        getSharedCollection
     );
     console.log(colldata);
     const games = colldata?.result?.games;
@@ -52,24 +45,6 @@ const CollectionData = () => {
             </div>
         );
 
-    const handleRemove = async (
-        e: React.MouseEvent<HTMLElement>,
-        slug: string
-    ) => {
-        e.stopPropagation();
-        try {
-            const data = await removeGame({
-                userId: uid!,
-                collectionId: collid,
-                slug,
-            });
-            toast.success(data.message);
-            mutate();
-        } catch (error: any) {
-            toast.error(error.response.data.message);
-        }
-    };
-
     const openGame = (slug: string) => {
         router.push("/game/" + slug);
     };
@@ -80,14 +55,6 @@ const CollectionData = () => {
                 onClick={() => openGame(game.slug)}
                 className="relative group h-[304px] w-[200px] bg-slate-200 dark:bg-slate-900 border-0 drop-shadow-md dark:border"
             >
-                <Button
-                    variant="destructive"
-                    size="icon"
-                    className="absolute rounded-full top-1 right-1 z-30 invisible group-hover:visible"
-                    onClick={(e) => handleRemove(e, game.slug)}
-                >
-                    <TrashIcon className="h-5 w-5" />
-                </Button>
                 <CardContent className="p-0 h-[267px] overflow-hidden rounded-xl">
                     <Image
                         src={game.coverUrl || "/cover-missing.jpg"}
@@ -120,7 +87,7 @@ const CollectionData = () => {
                     gamesList
                 ) : (
                     <ErrorMessage
-                        message={"Go search and add games in this collection."}
+                        message={"No games added in this collection."}
                     />
                 )}
             </ul>

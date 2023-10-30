@@ -14,7 +14,7 @@ const CollectionsPage = async () => {
 
     return (
         <div className="my-20 px-4 md:px-4 lg:px-6 2xl:container">
-            <div className="grid grid-cols-[30%_68%] gap-6">
+            <div className="grid grid-cols-[27%_70%] gap-6">
                 <div className="mx-3">
                     <CreateCollection />
                 </div>

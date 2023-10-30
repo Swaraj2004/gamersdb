@@ -24,7 +24,6 @@ const Requests = () => {
         data: requests,
         isLoading,
         error,
-        isValidating,
     } = useSWR(uid && `/requests?uid=${uid}`, getRequests);
     console.log(requests?.result);
 
@@ -42,15 +41,6 @@ const Requests = () => {
                 <div className="mt-3 mx-auto">There is an error.</div>
             </>
         );
-
-    if (isValidating) {
-        return (
-            <>
-                <div className="text-2xl font-semibold">Requests</div>
-                <div className="mt-3 mx-auto">Revalidating...</div>
-            </>
-        );
-    }
 
     const handleAccept = async (requestId: string) => {
         try {

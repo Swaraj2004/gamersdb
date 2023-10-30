@@ -25,33 +25,7 @@ const FriendsList = () => {
         data: friends,
         isLoading,
         error,
-        isValidating,
     } = useSWR(uid && `?uid=${uid}`, getFriends);
-    console.log(friends?.result);
-
-    if (isLoading)
-        return (
-            <>
-                <div className="text-2xl font-semibold">Friends</div>
-                <div className="mt-3 mx-auto">Loading...</div>
-            </>
-        );
-    if (error)
-        return (
-            <>
-                <div className="text-2xl font-semibold">Friends</div>
-                <div className="mt-3 mx-auto">There is an error.</div>
-            </>
-        );
-
-    if (isValidating) {
-        return (
-            <>
-                <div className="text-2xl font-semibold">Friends</div>
-                <div className="mt-3 mx-auto">Revalidating...</div>
-            </>
-        );
-    }
 
     const handleRemove = async (friendId: string) => {
         try {
@@ -59,7 +33,6 @@ const FriendsList = () => {
                 userId: uid!,
                 friendId,
             });
-            console.log(data);
             mutate(`?uid=${uid}`);
             toast.success(data.message);
         } catch (error: any) {
@@ -124,13 +97,22 @@ const FriendsList = () => {
         <>
             <div className="text-2xl font-semibold">Friends</div>
             <ul className="mt-5">
-                {friendsList?.length > 0 ? (
-                    friendsList
-                ) : (
+                {isLoading && (
+                    <div className="text-center text-lg">Loading...</div>
+                )}
+                {error && (
                     <div className="text-center text-lg">
-                        You don't have any friends.
+                        There is an error.
                     </div>
                 )}
+                {session &&
+                    (friendsList?.length > 0 ? (
+                        friendsList
+                    ) : (
+                        <div className="text-center text-lg">
+                            You don't have any friends.
+                        </div>
+                    ))}
             </ul>
         </>
     );

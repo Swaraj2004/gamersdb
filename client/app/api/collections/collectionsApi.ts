@@ -4,8 +4,13 @@ const collectionsApi = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-export const getGames = async (url: string) => {
-    const res = await collectionsApi.get(url); // url = `/user/collection/games?uid=${uid}&collid=${collid}`
+export const getCollection = async (url: string) => {
+    const res = await collectionsApi.get(url); // url = `/user/collection?uid=${uid}&collid=${collid}`
+    return res.data;
+};
+
+export const getSharedCollection = async (url: string) => {
+    const res = await collectionsApi.get(url); // url = `/user/collection/share?uid=${uid}&collid=${collid}`
     return res.data;
 };
 
@@ -24,7 +29,7 @@ export const addGame = async ({
     genre: string | null;
     coverUrl: string | null;
 }) => {
-    const res = await collectionsApi.post(`/user/collections/games`, {
+    const res = await collectionsApi.post(`/user/collection`, {
         uid: userId,
         collid: collectionId,
         name,
@@ -44,7 +49,7 @@ export const removeGame = async ({
     collectionId: string;
     slug: string;
 }) => {
-    const res = await collectionsApi.delete(`/user/collections/games`, {
+    const res = await collectionsApi.delete(`/user/collection`, {
         params: {
             uid: userId,
             collid: collectionId,
@@ -144,17 +149,17 @@ export const shareCollection = async ({
 };
 
 export const unshareCollection = async ({
-    userId,
+    // userId,
     friendId,
     collectionId,
 }: {
-    userId: string;
+    // userId: string;
     friendId: string;
     collectionId: string;
 }) => {
     const res = await collectionsApi.delete(`/user/collections/share/users`, {
         params: {
-            uid: userId,
+            // uid: userId,
             fid: friendId,
             collid: collectionId,
         },

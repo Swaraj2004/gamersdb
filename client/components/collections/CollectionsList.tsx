@@ -4,8 +4,10 @@ import {
     deleteCollection,
     getCollections,
     getSharedCollections,
+    unshareCollection,
     updateCollection,
 } from "@/app/api/collections/collectionsApi";
+import ShareCollection from "@/components/collections/ShareCollection";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -19,7 +21,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Cross2Icon, Pencil1Icon, Share1Icon } from "@radix-ui/react-icons";
+import { Cross1Icon, Pencil1Icon } from "@radix-ui/react-icons";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
@@ -35,44 +37,16 @@ const CollectionsList = () => {
         data: ownedCollections,
         isLoading: isLoadingOwned,
         error: errorOwned,
-        isValidating: isValidatingOwned,
     } = useSWR(uid && `/user/collections?uid=${uid}`, getCollections);
-    console.log(ownedCollections?.result);
 
     const {
         data: sharedCollections,
         isLoading: isLoadingShared,
         error: errorShared,
-        isValidating: isValidatingShared,
     } = useSWR(
         uid && `/user/collections/share?uid=${uid}`,
         getSharedCollections
     );
-    console.log(ownedCollections?.result);
-
-    if (isLoadingOwned || isLoadingShared)
-        return (
-            <>
-                <div className="text-2xl font-semibold">Collections</div>
-                <div className="mt-3 mx-auto">Loading...</div>
-            </>
-        );
-
-    if (errorOwned || errorShared)
-        return (
-            <>
-                <div className="text-2xl font-semibold">Collections</div>
-                <div className="mt-3 mx-auto">There is an error.</div>
-            </>
-        );
-
-    if (isValidatingOwned || isValidatingShared)
-        return (
-            <>
-                <div className="text-2xl font-semibold">Collections</div>
-                <div className="mt-3 mx-auto">Revalidating...</div>
-            </>
-        );
 
     const handleUpdate = async (
         e: React.FormEvent<HTMLFormElement>,
@@ -85,7 +59,6 @@ const CollectionsList = () => {
                 name: newCollectionName,
                 userId: uid!,
             });
-            console.log(data);
             mutate(`/user/collections?uid=${uid}`);
             toast.success(data.message);
         } catch (error: any) {
@@ -99,8 +72,20 @@ const CollectionsList = () => {
                 collectionId,
                 userId: uid!,
             });
-            console.log(data);
             mutate(`/user/collections?uid=${uid}`);
+            toast.success(data.message);
+        } catch (error: any) {
+            toast.error(error.response.data.message);
+        }
+    };
+
+    const handleUnshare = async (collectionId: string) => {
+        try {
+            const data = await unshareCollection({
+                friendId: uid!,
+                collectionId,
+            });
+            mutate(`/user/collections/share?uid=${uid}`);
             toast.success(data.message);
         } catch (error: any) {
             toast.error(error.response.data.message);
@@ -114,31 +99,18 @@ const CollectionsList = () => {
         >
             <Link
                 href={`/collections/${collection._id}`}
-                className="text-lg font-medium mr-auto ml-4 grow hover:underline"
+                className="text-lg font-medium mr-auto ml-4 grow"
             >
                 {collection.name}
             </Link>
             <div>
+                <ShareCollection collection={collection} />
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button
-                            className="rounded-full px-2 h-8 mr-2 bg-slate-300 hover:bg-slate-200 dark:hover:bg-secondary/80 dark:bg-slate-800"
+                            className="rounded-full mx-2 bg-slate-300 hover:bg-slate-200 dark:hover:bg-secondary/80 dark:bg-slate-800"
                             variant="secondary"
-                        >
-                            <Share1Icon className="h-4 w-4" />
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-[340px] sm:max-w-sm">
-                        <DialogHeader>
-                            <DialogTitle>Share Collection</DialogTitle>
-                        </DialogHeader>
-                    </DialogContent>
-                </Dialog>
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <Button
-                            className="rounded-full px-2 h-8 mr-2 bg-slate-300 hover:bg-slate-200 dark:hover:bg-secondary/80 dark:bg-slate-800"
-                            variant="secondary"
+                            size="icon"
                         >
                             <Pencil1Icon className="h-4 w-4" />
                         </Button>
@@ -175,18 +147,19 @@ const CollectionsList = () => {
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button
-                            className="rounded-full px-2 h-8"
+                            className="rounded-full"
                             variant="destructive"
+                            size="icon"
                         >
-                            <Cross2Icon className="h-4 w-4" />
+                            <Cross1Icon className="h-4 w-4 stroke-2" />
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-[340px] sm:max-w-sm">
                         <DialogHeader>
                             <DialogTitle>Remove Collection</DialogTitle>
                             <DialogDescription>
-                                Are you sure you want to remove{" "}
-                                {collection.name} collection?
+                                Are you sure you want to remove
+                                {" " + collection.name} collection?
                             </DialogDescription>
                         </DialogHeader>
                         <DialogFooter className="sm:justify-end">
@@ -217,19 +190,23 @@ const CollectionsList = () => {
             className="flex border rounded-xl h-18 mt-3 py-3 px-4 items-center bg-slate-100 dark:bg-gray-950"
         >
             <Link
-                href={`/collections/${collection._id}`}
-                className="text-lg font-medium mr-auto ml-4 hover:underline"
+                href={`/collections/share/${collection._id}`}
+                className="text-lg font-medium mr-auto ml-4 grow"
             >
                 {collection.name}
+                <span className="ml-3 text-muted-foreground">
+                    ({collection.owner.username})
+                </span>
             </Link>
-            <div className="absolute z-10">
+            <div>
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button
-                            className="rounded-full px-2 h-8"
+                            className="rounded-full"
                             variant="destructive"
+                            size="icon"
                         >
-                            <Cross2Icon className="h-4 w-4" />
+                            <Cross1Icon className="h-4 w-4" />
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-[340px] sm:max-w-sm">
@@ -242,7 +219,13 @@ const CollectionsList = () => {
                         </DialogHeader>
                         <DialogFooter className="sm:justify-end">
                             <DialogClose asChild>
-                                <Button type="button" variant="destructive">
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    onClick={() =>
+                                        handleUnshare(collection._id)
+                                    }
+                                >
                                     Yes
                                 </Button>
                             </DialogClose>
@@ -278,24 +261,46 @@ const CollectionsList = () => {
                 </TabsList>
                 <TabsContent value="owned">
                     <ul className="mt-5">
-                        {ownedList?.length > 0 ? (
-                            ownedList
-                        ) : (
+                        {isLoadingOwned && (
                             <div className="text-center text-lg">
-                                Go on and create some collections.
+                                Loading...
                             </div>
                         )}
+                        {errorOwned && (
+                            <div className="text-center text-lg">
+                                There is an error.
+                            </div>
+                        )}
+                        {session &&
+                            (ownedList?.length > 0 ? (
+                                ownedList
+                            ) : (
+                                <div className="text-center text-lg">
+                                    Go on and create some collections.
+                                </div>
+                            ))}
                     </ul>
                 </TabsContent>
                 <TabsContent value="shared">
                     <ul className="mt-5">
-                        {sharedList?.length > 0 ? (
-                            sharedList
-                        ) : (
+                        {isLoadingShared && (
                             <div className="text-center text-lg">
-                                You don't have any shared collections.
+                                Loading...
                             </div>
                         )}
+                        {errorShared && (
+                            <div className="text-center text-lg">
+                                There is an error.
+                            </div>
+                        )}
+                        {session &&
+                            (sharedList?.length > 0 ? (
+                                sharedList
+                            ) : (
+                                <div className="text-center text-lg">
+                                    You don't have any shared collections.
+                                </div>
+                            ))}
                     </ul>
                 </TabsContent>
             </Tabs>
