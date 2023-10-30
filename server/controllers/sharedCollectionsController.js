@@ -167,7 +167,7 @@ const shareCollection = asyncHandler(async (req, res) => {
     await collection.save();
 
     res.json({
-        message: `Collection shared with ${friend.username}`,
+        message: `Collection shared with ${friend.username} successfully`,
         success: true,
     });
 });
@@ -257,7 +257,7 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
     await collection.save();
 
     res.json({
-        message: "Collection unshared",
+        message: "Collection unshared successfully",
         success: true,
     });
 });

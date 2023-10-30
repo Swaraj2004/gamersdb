@@ -105,7 +105,7 @@ const sendRequest = asyncHandler(async (req, res) => {
     });
 
     res.status(201).json({
-        message: "Friend request sent",
+        message: "Friend request sent successfully",
         success: true,
     });
 });
@@ -253,7 +253,9 @@ const removeFriend = asyncHandler(async (req, res) => {
     }
 
     // Check if user & friend exists
-    const user = await User.findById(userId).exec();
+    const user = await User.findById(userId)
+        .populate("collections", "sharedWith")
+        .exec();
     const friend = await User.findById(friendId).exec();
     if (!user || !friend) {
         return res
@@ -278,6 +280,21 @@ const removeFriend = asyncHandler(async (req, res) => {
     friend.friends = friend.friends.filter(
         (friendUserId) => friendUserId.toString() !== userId
     );
+
+    // Remove shared collections
+    friend.sharedCollections = friend.sharedCollections.filter(
+        (collectionId) => !user.collections.includes(collectionId)
+    );
+    user.sharedCollections = user.sharedCollections.filter(
+        (collectionId) => !friend.collections.includes(collectionId)
+    );
+
+    // Remove friendId from sharedWith in each collection of user
+    user.collections.forEach((collection) => {
+        collection.sharedWith = collection.sharedWith.filter(
+            (friendId) => friendId.toString() !== friend._id.toString()
+        );
+    });
 
     await user.save();
     await friend.save();

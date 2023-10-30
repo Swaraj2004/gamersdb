@@ -3,7 +3,7 @@ const Collection = require("../models/Collection");
 const Game = require("../models/Game");
 const asyncHandler = require("express-async-handler");
 
-async function validator(userId, collectionId) {
+async function validator(userId, collectionId, shared = false) {
     // Check if user exists
     const user = await User.findById(userId).lean().exec();
     if (!user) {
@@ -17,7 +17,7 @@ async function validator(userId, collectionId) {
     }
 
     // Check if user is the owner of the collection
-    if (userId !== collection.owner.toString()) {
+    if (!shared && userId !== collection.owner.toString()) {
         return {
             error: {
                 message: "User is not the owner of the collection",
@@ -26,13 +26,15 @@ async function validator(userId, collectionId) {
         };
     }
 
+    // Check if collection is shared
+    if (shared && !collection.sharedWith.includes(userId)) {
+        return { error: { message: "Collection not shared", success: false } };
+    }
+
     return { user, collection };
 }
 
-// @desc Get all games
-// @route GET /user/collections/games
-// @access Private
-const getAllGames = asyncHandler(async (req, res) => {
+const collectionGetter = async (req, res, shared) => {
     const { uid: userId, collid: collectionId } = req.query;
 
     // Confirm data
@@ -42,7 +44,7 @@ const getAllGames = asyncHandler(async (req, res) => {
             .json({ message: "All fields are required", success: false });
     }
 
-    const validation = await validator(userId, collectionId);
+    const validation = await validator(userId, collectionId, shared);
 
     if (validation.error) {
         return res.status(404).json(validation.error);
@@ -55,18 +57,21 @@ const getAllGames = asyncHandler(async (req, res) => {
     // Get all games from games array
     const games = collection.games;
 
-    // If no games
-    if (!games?.length) {
-        return res
-            .status(200)
-            .json({ message: "No games are added", success: false });
-    }
+    res.json({ result: { collection: collection.name, games }, success: true });
+};
 
-    res.json({ result: games, success: true });
+// @desc Get a collection (shared or non-shared)
+// @route GET /user/collection
+// @route GET /user/collection/share
+// @access Private
+const getCollection = asyncHandler(async (req, res) => {
+    // Determine whether the collection is shared based on the route
+    const shared = req.path === "/user/collection/share";
+    collectionGetter(req, res, shared);
 });
 
 // @desc Add the game
-// @route POST /user/collections/games
+// @route POST /user/collection
 // @access Private
 const addGame = asyncHandler(async (req, res) => {
     const {
@@ -113,7 +118,7 @@ const addGame = asyncHandler(async (req, res) => {
         }
 
         res.json({
-            message: `Game added to the collection successfully`,
+            message: `Game added to ${collection.name} successfully`,
             success: true,
         });
     }
@@ -129,13 +134,13 @@ const addGame = asyncHandler(async (req, res) => {
     await collection.save();
 
     res.json({
-        message: `New game ${game.name} added`,
+        message: `Game added to ${collection.name} successfully`,
         success: true,
     });
 });
 
 // @desc Remove the game
-// @route DELETE /user/collections/games
+// @route DELETE /user/collection
 // @access Private
 const removeGame = asyncHandler(async (req, res) => {
     const { uid: userId, collid: collectionId, slug } = req.query;
@@ -183,7 +188,7 @@ const removeGame = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-    getAllGames,
+    getCollection,
     addGame,
     removeGame,
 };
