@@ -29,12 +29,10 @@ const SendRequest = () => {
                 userId: uid!,
                 friendName: username,
             });
-            console.log(data);
             setUsername("");
             mutate(`/requests?uid=${uid}`);
             toast.success(data.message);
         } catch (error: any) {
-            console.log(error.message);
             toast.error(error.message);
         }
     };

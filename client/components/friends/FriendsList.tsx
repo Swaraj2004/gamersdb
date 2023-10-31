@@ -36,7 +36,7 @@ const FriendsList = () => {
             mutate(`?uid=${uid}`);
             toast.success(data.message);
         } catch (error: any) {
-            toast.error(error.response.data.message);
+            toast.error(error.message);
         }
     };
 
@@ -106,6 +106,7 @@ const FriendsList = () => {
                     </div>
                 )}
                 {session &&
+                    !isLoading &&
                     (friendsList?.length > 0 ? (
                         friendsList
                     ) : (

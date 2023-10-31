@@ -1,3 +1,4 @@
+import { errorHandler } from "@/lib/utils";
 import axios from "axios";
 
 const collectionsApi = axios.create({
@@ -5,13 +6,21 @@ const collectionsApi = axios.create({
 });
 
 export const getCollection = async (url: string) => {
-    const res = await collectionsApi.get(url); // url = `/user/collection?uid=${uid}&collid=${collid}`
-    return res.data;
+    try {
+        const res = await collectionsApi.get(url); // url = `/user/collection?uid=${uid}&collid=${collid}`
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };
 
 export const getSharedCollection = async (url: string) => {
-    const res = await collectionsApi.get(url); // url = `/user/collection/share?uid=${uid}&collid=${collid}`
-    return res.data;
+    try {
+        const res = await collectionsApi.get(url); // url = `/user/collection/share?uid=${uid}&collid=${collid}`
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };
 
 export const addGame = async ({
@@ -29,15 +38,19 @@ export const addGame = async ({
     genre: string | null;
     coverUrl: string | null;
 }) => {
-    const res = await collectionsApi.post(`/user/collection`, {
-        uid: userId,
-        collid: collectionId,
-        name,
-        slug,
-        genre,
-        coverUrl,
-    });
-    return res.data;
+    try {
+        const res = await collectionsApi.post(`/user/collection`, {
+            uid: userId,
+            collid: collectionId,
+            name,
+            slug,
+            genre,
+            coverUrl,
+        });
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };
 
 export const removeGame = async ({
@@ -49,19 +62,27 @@ export const removeGame = async ({
     collectionId: string;
     slug: string;
 }) => {
-    const res = await collectionsApi.delete(`/user/collection`, {
-        params: {
-            uid: userId,
-            collid: collectionId,
-            slug,
-        },
-    });
-    return res.data;
+    try {
+        const res = await collectionsApi.delete(`/user/collection`, {
+            params: {
+                uid: userId,
+                collid: collectionId,
+                slug,
+            },
+        });
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };
 
 export const getCollections = async (url: string) => {
-    const res = await collectionsApi.get(url); // url = `/user/collections?uid=${uid}`
-    return res.data;
+    try {
+        const res = await collectionsApi.get(url); // url = `/user/collections?uid=${uid}`
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };
 
 export const createCollection = async ({
@@ -71,11 +92,15 @@ export const createCollection = async ({
     userId: string;
     name: string;
 }) => {
-    const res = await collectionsApi.post(`/user/collections`, {
-        uid: userId,
-        name,
-    });
-    return res.data;
+    try {
+        const res = await collectionsApi.post(`/user/collections`, {
+            uid: userId,
+            name,
+        });
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };
 
 export const updateCollection = async ({
@@ -87,13 +112,17 @@ export const updateCollection = async ({
     name: string;
     userId: string;
 }) => {
-    const res = await collectionsApi.patch(`/user/collections`, {
-        collid: collectionId,
-        name,
-        uid: userId,
-    });
-    console.log(res.data);
-    return res.data;
+    try {
+        const res = await collectionsApi.patch(`/user/collections`, {
+            collid: collectionId,
+            name,
+            uid: userId,
+        });
+        console.log(res.data);
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };
 
 export const deleteCollection = async ({
@@ -103,18 +132,26 @@ export const deleteCollection = async ({
     collectionId: string;
     userId: string;
 }) => {
-    const res = await collectionsApi.delete(`/user/collections`, {
-        params: {
-            collid: collectionId,
-            uid: userId,
-        },
-    });
-    return res.data;
+    try {
+        const res = await collectionsApi.delete(`/user/collections`, {
+            params: {
+                collid: collectionId,
+                uid: userId,
+            },
+        });
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };
 
 export const getSharedCollections = async (url: string) => {
-    const res = await collectionsApi.get(url); // url = `/user/collections/share/?uid=${uid}`
-    return res.data;
+    try {
+        const res = await collectionsApi.get(url); // url = `/user/collections/share/?uid=${uid}`
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };
 
 export const sharedWith = async ({
@@ -124,11 +161,15 @@ export const sharedWith = async ({
     collectionId: string;
     userId: string;
 }) => {
-    const res = await collectionsApi.post(`/user/collections/share/users`, {
-        collid: collectionId,
-        uid: userId,
-    });
-    return res.data;
+    try {
+        const res = await collectionsApi.post(`/user/collections/share/users`, {
+            collid: collectionId,
+            uid: userId,
+        });
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };
 
 export const shareCollection = async ({
@@ -140,12 +181,16 @@ export const shareCollection = async ({
     friendId: string;
     collectionId: string;
 }) => {
-    const res = await collectionsApi.post(`/user/collections/share/users`, {
-        uid: userId,
-        fid: friendId,
-        collid: collectionId,
-    });
-    return res.data;
+    try {
+        const res = await collectionsApi.post(`/user/collections/share/users`, {
+            uid: userId,
+            fid: friendId,
+            collid: collectionId,
+        });
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };
 
 export const unshareCollection = async ({
@@ -157,12 +202,19 @@ export const unshareCollection = async ({
     friendId: string;
     collectionId: string;
 }) => {
-    const res = await collectionsApi.delete(`/user/collections/share/users`, {
-        params: {
-            // uid: userId,
-            fid: friendId,
-            collid: collectionId,
-        },
-    });
-    return res.data;
+    try {
+        const res = await collectionsApi.delete(
+            `/user/collections/share/users`,
+            {
+                params: {
+                    // uid: userId,
+                    fid: friendId,
+                    collid: collectionId,
+                },
+            }
+        );
+        return res.data;
+    } catch (error: any) {
+        errorHandler(error);
+    }
 };

@@ -25,7 +25,6 @@ const Requests = () => {
         isLoading,
         error,
     } = useSWR(uid && `/requests?uid=${uid}`, getRequests);
-    console.log(requests?.result);
 
     if (isLoading)
         return (
@@ -140,25 +139,29 @@ const Requests = () => {
             </li>
         );
     });
-    console.log(receivedList);
-    console.log(pendingList);
 
     return (
         <>
             <div className="text-2xl font-semibold">Requests</div>
-            {requests?.result?.receivedRequests?.length !== 0 && (
-                <div className="mt-3">
-                    <div className="text-muted-foreground">Recieved</div>
-                    <ul>{receivedList}</ul>
-                </div>
-            )}
-            {requests?.result?.sentRequests?.length !== 0 && (
-                <div className="mt-3">
-                    <div className="text-muted-foreground">Pending</div>
-                    <ul>{pendingList}</ul>
-                </div>
-            )}
-            {requests?.result?.receivedRequests?.length === 0 &&
+            {session &&
+                !isLoading &&
+                requests?.result?.receivedRequests?.length !== 0 && (
+                    <div className="mt-3">
+                        <div className="text-muted-foreground">Recieved</div>
+                        <ul>{receivedList}</ul>
+                    </div>
+                )}
+            {session &&
+                !isLoading &&
+                requests?.result?.sentRequests?.length !== 0 && (
+                    <div className="mt-3">
+                        <div className="text-muted-foreground">Pending</div>
+                        <ul>{pendingList}</ul>
+                    </div>
+                )}
+            {session &&
+                !isLoading &&
+                requests?.result?.receivedRequests?.length === 0 &&
                 requests?.result?.sentRequests?.length === 0 && (
                     <div className="mt-3 mx-auto">
                         No requests sent or recieved.

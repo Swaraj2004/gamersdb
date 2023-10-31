@@ -62,7 +62,7 @@ const CollectionsList = () => {
             mutate(`/user/collections?uid=${uid}`);
             toast.success(data.message);
         } catch (error: any) {
-            toast.error(error.response.data.message);
+            toast.error(error.message);
         }
     };
 
@@ -75,7 +75,7 @@ const CollectionsList = () => {
             mutate(`/user/collections?uid=${uid}`);
             toast.success(data.message);
         } catch (error: any) {
-            toast.error(error.response.data.message);
+            toast.error(error.message);
         }
     };
 
@@ -88,7 +88,7 @@ const CollectionsList = () => {
             mutate(`/user/collections/share?uid=${uid}`);
             toast.success(data.message);
         } catch (error: any) {
-            toast.error(error.response.data.message);
+            toast.error(error.message);
         }
     };
 
@@ -274,6 +274,8 @@ const CollectionsList = () => {
                             </div>
                         )}
                         {session &&
+                            !isLoadingOwned &&
+                            !errorOwned &&
                             (ownedList?.length > 0 ? (
                                 ownedList
                             ) : (
@@ -296,6 +298,8 @@ const CollectionsList = () => {
                             </div>
                         )}
                         {session &&
+                            !isLoadingShared &&
+                            !errorShared &&
                             (sharedList?.length > 0 ? (
                                 sharedList
                             ) : (

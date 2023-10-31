@@ -27,18 +27,22 @@ const Search = async ({ searchParams }: { searchParams: { name: string } }) => {
         );
     }
 
-    const searchRes = await searchGames(searchParams.name);
-    const games = searchRes.result;
+    try {
+        const searchRes = await searchGames(searchParams.name);
+        const games = searchRes.result;
 
-    if (!games || games.length === 0) {
-        return <ErrorMessage message={"No related results were found."} />;
+        if (!games || games.length === 0) {
+            return <ErrorMessage message={"No related results were found."} />;
+        }
+
+        return (
+            <div className="my-16 px-4 md:px-4 lg:px-6 2xl:container">
+                <SearchedGames games={games} title={"Search Results"} />
+            </div>
+        );
+    } catch (error) {
+        return <ErrorMessage message={"Something went wrong."} />;
     }
-
-    return (
-        <div className="my-16 px-4 md:px-4 lg:px-6 2xl:container">
-            <SearchedGames games={games} title={"Search Results"} />
-        </div>
-    );
 };
 
 export default Search;

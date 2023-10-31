@@ -33,8 +33,7 @@ const CreateCollection = () => {
             mutate(`/user/collections?uid=${uid}`);
             toast.success(data.message);
         } catch (error: any) {
-            console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error.message);
         }
     };
 

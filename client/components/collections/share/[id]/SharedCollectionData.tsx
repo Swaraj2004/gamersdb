@@ -25,7 +25,6 @@ const CollectionData = () => {
         uid && `/user/collection/share?uid=${uid}&collid=${collid}`,
         getSharedCollection
     );
-    console.log(colldata);
     const games = colldata?.result?.games;
 
     if (isLoading)
@@ -35,15 +34,7 @@ const CollectionData = () => {
                 <div className="mt-3 mx-auto">Loading...</div>
             </div>
         );
-    if (error)
-        return (
-            <div>
-                <div className="text-2xl font-semibold">Collection</div>
-                <div className="mt-3 mx-auto">
-                    {error.response.data.message}
-                </div>
-            </div>
-        );
+    if (error) return <ErrorMessage message={error.message} />;
 
     const openGame = (slug: string) => {
         router.push("/game/" + slug);
@@ -83,7 +74,7 @@ const CollectionData = () => {
             </h3>
             <hr className="mt-2 mb-4" />
             <ul className="flex justify-center flex-wrap gap-4">
-                {gamesList?.length > 0 ? (
+                {session && !isLoading && gamesList?.length > 0 ? (
                     gamesList
                 ) : (
                     <ErrorMessage

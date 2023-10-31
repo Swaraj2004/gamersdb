@@ -1,6 +1,7 @@
 import DisplayGames from "@/components/home/DisplayGames";
 import DisplayNews from "@/components/home/DisplayNews";
 import HeroSection from "@/components/home/HeroSection";
+import ErrorMessage from "@/components/shared/ErrorMessage";
 import { GameResponse } from "../types/game";
 import { NewsResponse } from "../types/news";
 
@@ -33,21 +34,28 @@ async function getNews(limit: number): Promise<NewsResponse> {
 }
 
 const Home = async () => {
-    const gamesRes = await getGames(25);
-    const newsRes = await getNews(20);
+    try {
+        const gamesRes = await getGames(25);
+        const newsRes = await getNews(20);
 
-    const recentReleases = gamesRes.result[0].result;
-    const comingSoon = gamesRes.result[1].result;
-    const newsArr = newsRes.result;
+        const recentReleases = gamesRes.result[0].result;
+        const comingSoon = gamesRes.result[1].result;
+        const newsArr = newsRes.result;
 
-    return (
-        <div className="my-14 px-4 md:px-4 lg:px-6 2xl:container">
-            <HeroSection />
-            <DisplayGames games={recentReleases} title={"Recently Released"} />
-            <DisplayGames games={comingSoon} title={"Coming Soon"} />
-            <DisplayNews newsArr={newsArr} title={"News"} />
-        </div>
-    );
+        return (
+            <div className="my-14 px-4 md:px-4 lg:px-6 2xl:container">
+                <HeroSection />
+                <DisplayGames
+                    games={recentReleases}
+                    title={"Recently Released"}
+                />
+                <DisplayGames games={comingSoon} title={"Coming Soon"} />
+                <DisplayNews newsArr={newsArr} title={"News"} />
+            </div>
+        );
+    } catch (error: any) {
+        return <ErrorMessage message="Something went wrong." />;
+    }
 };
 
 export default Home;

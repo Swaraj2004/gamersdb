@@ -32,7 +32,6 @@ const CollectionData = () => {
         getCollection,
         { revalidateOnFocus: false }
     );
-    console.log(colldata);
     const games = colldata?.result?.games;
 
     if (isLoading)
@@ -42,15 +41,7 @@ const CollectionData = () => {
                 <div className="mt-3 mx-auto">Loading...</div>
             </div>
         );
-    if (error)
-        return (
-            <div>
-                <div className="text-2xl font-semibold">Collection</div>
-                <div className="mt-3 mx-auto">
-                    {error.response.data.message}
-                </div>
-            </div>
-        );
+    if (error) return <ErrorMessage message={error.message} />;
 
     const handleRemove = async (
         e: React.MouseEvent<HTMLElement>,
@@ -66,7 +57,7 @@ const CollectionData = () => {
             toast.success(data.message);
             mutate();
         } catch (error: any) {
-            toast.error(error.response.data.message);
+            toast.error(error.message);
         }
     };
 
@@ -116,7 +107,7 @@ const CollectionData = () => {
             </h3>
             <hr className="mt-2 mb-4" />
             <ul className="flex justify-center flex-wrap gap-4">
-                {gamesList?.length > 0 ? (
+                {session && !isLoading && gamesList?.length > 0 ? (
                     gamesList
                 ) : (
                     <ErrorMessage
