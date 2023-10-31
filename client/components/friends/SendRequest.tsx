@@ -34,7 +34,8 @@ const SendRequest = () => {
             mutate(`/requests?uid=${uid}`);
             toast.success(data.message);
         } catch (error: any) {
-            toast.error(error.respone.data.message);
+            console.log(error.message);
+            toast.error(error.message);
         }
     };
 

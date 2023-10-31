@@ -1,11 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: [
-            "images.igdb.com",
-            "assetsio.reedpopcdn.com",
-            "i.kinja-img.com",
-            "www.destructoid.com",
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "images.igdb.com",
+            },
+            {
+                protocol: "https",
+                hostname: "assetsio.reedpopcdn.com",
+            },
+            {
+                protocol: "https",
+                hostname: "i.kinja-img.com",
+            },
+            {
+                protocol: "https",
+                hostname: "www.destructoid.com",
+            },
         ],
     },
 };

@@ -137,9 +137,11 @@ const CollectionsList = () => {
                                 </div>
                             </div>
                             <DialogFooter>
-                                <Button className="w-full mt-5">
-                                    Change Collection Name
-                                </Button>
+                                <DialogClose className="w-full mt-5">
+                                    <Button className="w-full">
+                                        Change Collection Name
+                                    </Button>
+                                </DialogClose>
                             </DialogFooter>
                         </form>
                     </DialogContent>

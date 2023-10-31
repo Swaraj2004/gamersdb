@@ -16,7 +16,7 @@ const Rating = ({ rating }: { rating: string | number }) => {
                     backgroundColor: "#fff",
                     textSize: "1.7rem",
                     textColor: "#000",
-                    pathColor: "#6D28D9",
+                    pathColor: "#7247f5",
                     trailColor: "#374151",
                     // trailColor: "#fff",
                 })}
