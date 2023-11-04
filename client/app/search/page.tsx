@@ -16,7 +16,6 @@ async function searchGames(name: string): Promise<SearchGameResponse> {
 }
 
 const Search = async ({ searchParams }: { searchParams: { name: string } }) => {
-    console.log(searchParams.name);
     if (!searchParams.name) {
         return (
             <ErrorMessage

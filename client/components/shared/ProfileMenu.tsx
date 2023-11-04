@@ -9,10 +9,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useRouter } from "next-nprogress-bar";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 const ProfileMenu = () => {
+    const router = useRouter();
     const { data: session, status } = useSession();
 
     return (
@@ -58,7 +60,13 @@ const ProfileMenu = () => {
                     </Link>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem
+                    onClick={() =>
+                        signOut({ redirect: false }).then(() => {
+                            router.push("/");
+                        })
+                    }
+                >
                     Log out
                 </DropdownMenuItem>
             </DropdownMenuContent>
