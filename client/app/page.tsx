@@ -2,8 +2,9 @@ import DisplayGames from "@/components/home/DisplayGames";
 import DisplayNews from "@/components/home/DisplayNews";
 import HeroSection from "@/components/home/HeroSection";
 import ErrorMessage from "@/components/shared/ErrorMessage";
-import { GameResponse } from "../types/game";
-import { NewsResponse } from "../types/news";
+import { GameResponse } from "@/types/game";
+import { NewsResponse } from "@/types/news";
+import { Suspense } from "react";
 
 async function getGames(limit: number): Promise<GameResponse> {
     const res = await fetch(
@@ -45,16 +46,18 @@ const Home = async () => {
         return (
             <div className="my-14 px-4 md:px-4 lg:px-6 2xl:container">
                 <HeroSection />
-                <DisplayGames
-                    games={recentReleases}
-                    title={"Recently Released"}
-                />
-                <DisplayGames games={comingSoon} title={"Coming Soon"} />
-                <DisplayNews newsArr={newsArr} title={"News"} />
+                <Suspense fallback={<></>}>
+                    <DisplayGames
+                        games={recentReleases}
+                        title={"Recently Released"}
+                    />
+                    <DisplayGames games={comingSoon} title={"Coming Soon"} />
+                    <DisplayNews newsArr={newsArr} title={"News"} />
+                </Suspense>
             </div>
         );
     } catch (error: any) {
-        return <ErrorMessage message="Something went wrong." />;
+        return <ErrorMessage message={error} />;
     }
 };
 

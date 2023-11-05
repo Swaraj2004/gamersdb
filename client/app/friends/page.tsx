@@ -4,6 +4,7 @@ import Requests from "@/components/friends/Requests";
 import SendRequest from "@/components/friends/SendRequest";
 import ErrorMessage from "@/components/shared/ErrorMessage";
 import { getServerSession } from "next-auth/next";
+import { Suspense } from "react";
 
 const FriendsPage = async () => {
     const session = await getServerSession(options);
@@ -15,17 +16,19 @@ const FriendsPage = async () => {
 
     return (
         <div className="my-20 px-4 md:px-4 lg:px-6 2xl:container">
-            <div className="grid grid-cols-[25%_46%_25%] gap-6">
-                <div className="mx-3">
-                    <SendRequest />
+            <Suspense fallback={<></>}>
+                <div className="grid grid-cols-[25%_46%_25%] gap-6">
+                    <div className="mx-3">
+                        <SendRequest />
+                    </div>
+                    <div className="mx-3">
+                        <FriendsList />
+                    </div>
+                    <div className="mx-3">
+                        <Requests />
+                    </div>
                 </div>
-                <div className="mx-3">
-                    <FriendsList />
-                </div>
-                <div className="mx-3">
-                    <Requests />
-                </div>
-            </div>
+            </Suspense>
         </div>
     );
 };

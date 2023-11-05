@@ -1,6 +1,7 @@
 import SearchedGames from "@/components/search/SearchedGames";
 import ErrorMessage from "@/components/shared/ErrorMessage";
 import { SearchGameResponse } from "@/types/game";
+import { Suspense } from "react";
 
 async function searchGames(name: string): Promise<SearchGameResponse> {
     const res = await fetch(
@@ -28,6 +29,7 @@ const Search = async ({ searchParams }: { searchParams: { name: string } }) => {
 
     try {
         const searchRes = await searchGames(searchParams.name);
+        console.log(searchRes);
         const games = searchRes.result;
 
         if (!games || games.length === 0) {
@@ -36,11 +38,13 @@ const Search = async ({ searchParams }: { searchParams: { name: string } }) => {
 
         return (
             <div className="my-16 px-4 md:px-4 lg:px-6 2xl:container">
-                <SearchedGames games={games} title={"Search Results"} />
+                <Suspense fallback={<></>}>
+                    <SearchedGames games={games} title={"Search Results"} />
+                </Suspense>
             </div>
         );
-    } catch (error) {
-        return <ErrorMessage message={"Something went wrong."} />;
+    } catch (error: any) {
+        return <ErrorMessage message={error} />;
     }
 };
 
