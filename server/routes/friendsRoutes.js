@@ -8,8 +8,8 @@ router
     .delete(friendsController.removeFriend);
 router
     .route("/user/friends/requests")
-    .post(friendsController.sendRequest)
-    .get(friendsController.getRequests);
+    .get(friendsController.getRequests)
+    .post(friendsController.sendRequest);
 router
     .route("/user/friends/requests/accept")
     .post(friendsController.acceptRequest);

@@ -77,14 +77,28 @@ const sendRequest = asyncHandler(async (req, res) => {
     }
 
     // Check if request already sent
-    const existingRequest = await FriendRequest.findOne({
+    const requestSent = await FriendRequest.findOne({
         sender: userId,
         recipient: friend._id,
     }).lean();
-    if (existingRequest) {
+    if (requestSent) {
         return res
             .status(400)
             .json({ message: "Friend request already sent", success: false });
+    }
+
+    // Check if request already received
+    const requestRecieved = await FriendRequest.findOne({
+        sender: friend._id,
+        recipient: userId,
+    }).lean();
+    if (requestRecieved) {
+        return res
+            .status(400)
+            .json({
+                message: "Friend request already received",
+                success: false,
+            });
     }
 
     // Check if already friends

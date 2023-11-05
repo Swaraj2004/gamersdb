@@ -121,7 +121,7 @@ const createNewUser = asyncHandler(async (req, res) => {
     await User.create(userObject);
 
     res.status(201).json({
-        message: `User registered successfully`,
+        message: "User registered successfully",
         success: true,
     });
 });
@@ -130,7 +130,7 @@ const createNewUser = asyncHandler(async (req, res) => {
 // @route PATCH /user
 // @access Private
 const updateUser = asyncHandler(async (req, res) => {
-    const { uid: userId, username, email, password, profileImg } = req.body;
+    const { uid: userId, username, email, profileImg } = req.body;
 
     // Confirm data
     if (!userId || !username || !email) {
@@ -169,16 +169,55 @@ const updateUser = asyncHandler(async (req, res) => {
     }
     user.username = username;
     user.email = email;
-    if (password) {
-        // Hash password
-        user.password = await bcrypt.hash(password, 10);
-    }
 
     // Update user
     await user.save();
 
     res.json({
-        message: `User updated successfully`,
+        message: "User profile updated successfully",
+        success: true,
+    });
+});
+
+// @desc Update user password
+// @route PATCH /user/password
+// @access Private
+const updatePassword = asyncHandler(async (req, res) => {
+    const { uid: userId, password: pass, newPassword } = req.body;
+
+    // Confirm data
+    if (!userId || !pass || !newPassword) {
+        return res.status(400).json({
+            message: "All fields are required",
+            success: false,
+        });
+    }
+
+    // Check if user exists to update
+    const user = await User.findById(userId).exec();
+    if (!user) {
+        return res
+            .status(404)
+            .json({ message: "User not found", success: false });
+    }
+
+    // Check if password is correct
+    const passwordEquals = await bcrypt.compare(pass, user.password);
+    if (!passwordEquals) {
+        return res.status(401).json({
+            message: "Password is invalid",
+            success: false,
+        });
+    }
+
+    // Hash password
+    user.password = await bcrypt.hash(newPassword, 10);
+
+    // Update user
+    await user.save();
+
+    res.json({
+        message: "Password updated successfully",
         success: true,
     });
 });
@@ -222,7 +261,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     await user.deleteOne();
 
     res.json({
-        message: `User deleted successfully`,
+        message: "User deleted successfully",
         success: true,
     });
 });
@@ -231,5 +270,6 @@ module.exports = {
     getUser,
     createNewUser,
     updateUser,
+    updatePassword,
     deleteUser,
 };
