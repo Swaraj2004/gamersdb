@@ -29,8 +29,7 @@ const Search = async ({ searchParams }: { searchParams: { name: string } }) => {
 
     try {
         const searchRes = await searchGames(searchParams.name);
-        console.log(searchRes);
-        const games = searchRes.result;
+        const games = JSON.stringify(searchRes.result);
 
         if (!games || games.length === 0) {
             return <ErrorMessage message={"No related results were found."} />;

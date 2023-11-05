@@ -9,7 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface GamesProps {
-    games: Game[];
+    games: string;
     title: String;
 }
 
@@ -28,7 +28,9 @@ export const splideOptions: any = {
 };
 
 const DisplayGames: React.FC<GamesProps> = ({ games, title }) => {
-    const recentList = games.map((game: Game) => (
+    const gamesArr: Game[] = JSON.parse(games);
+
+    const recentList = gamesArr.map((game: Game) => (
         <SplideSlide key={game.slug}>
             <Link href={"/game/" + game.slug}>
                 <Card className="my-2 h-[334px] bg-slate-200 dark:bg-slate-900 border-0 drop-shadow-md dark:border">

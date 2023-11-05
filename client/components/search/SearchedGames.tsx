@@ -8,12 +8,14 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface GamesProps {
-    games: Game[];
+    games: string;
     title: String;
 }
 
 const SearchedGames: React.FC<GamesProps> = ({ games, title }) => {
-    const recentList = games.map((game: Game) => (
+    const gamesArr: Game[] = JSON.parse(games);
+
+    const recentList = gamesArr.map((game: Game) => (
         <div key={game.slug}>
             <Link href={"/game/" + game.slug}>
                 <Card className="h-[304px] w-[200px] bg-slate-200 dark:bg-slate-900 border-0 drop-shadow-md dark:border">
@@ -44,7 +46,7 @@ const SearchedGames: React.FC<GamesProps> = ({ games, title }) => {
                 {title}
                 <ChevronRightIcon className="inline h-6 w-6 mb-1" />
             </h3>
-            <hr className="mt-2 mb-4"/>
+            <hr className="mt-2 mb-4" />
             <div className="flex justify-center flex-wrap gap-4">
                 {recentList}
             </div>

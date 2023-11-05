@@ -39,8 +39,9 @@ const Home = async () => {
         const gamesRes = await getGames(25);
         const newsRes = await getNews(20);
 
-        const recentReleases = gamesRes.result[0].result;
-        const comingSoon = gamesRes.result[1].result;
+        const recentReleases = JSON.stringify(gamesRes.result[0].result);
+        const comingSoon = JSON.stringify(gamesRes.result[1].result);
+        console.log(comingSoon);
         const newsArr = newsRes.result;
 
         return (
