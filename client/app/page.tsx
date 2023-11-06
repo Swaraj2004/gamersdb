@@ -41,7 +41,6 @@ const Home = async () => {
 
         const recentReleases = JSON.stringify(gamesRes.result[0].result);
         const comingSoon = JSON.stringify(gamesRes.result[1].result);
-        console.log(comingSoon);
         const newsArr = newsRes.result;
 
         return (

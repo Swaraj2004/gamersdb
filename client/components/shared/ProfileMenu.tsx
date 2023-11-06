@@ -61,6 +61,7 @@ const ProfileMenu = () => {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
+                    className="text-red-500 focus:bg-red-500 focus:bg-opacity-40"
                     onClick={() =>
                         signOut({ redirect: false }).then(() => {
                             router.push("/");

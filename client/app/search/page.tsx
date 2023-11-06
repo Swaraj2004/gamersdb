@@ -1,6 +1,7 @@
 import SearchedGames from "@/components/search/SearchedGames";
 import ErrorMessage from "@/components/shared/ErrorMessage";
 import { SearchGameResponse } from "@/types/game";
+import { log } from "console";
 import { Suspense } from "react";
 
 async function searchGames(name: string): Promise<SearchGameResponse> {
@@ -31,7 +32,7 @@ const Search = async ({ searchParams }: { searchParams: { name: string } }) => {
         const searchRes = await searchGames(searchParams.name);
         const games = JSON.stringify(searchRes.result);
 
-        if (!games || games.length === 0) {
+        if (!games || searchRes.result.length === 0) {
             return <ErrorMessage message={"No related results were found."} />;
         }
 
