@@ -25,25 +25,25 @@
         "next-auth": "^4.24.4",
         "next-nprogress-bar": "^2.1.2",
         "next-themes": "^0.2.1",
-        "react": "^18",
+        "react": "^18.2.0",
         "react-circular-progressbar": "^2.1.0",
-        "react-dom": "^18",
-        "react-hook-form": "^7.47.0",
-        "sonner": "^1.1.0",
+        "react-dom": "^18.2.0",
+        "react-hook-form": "^7.48.2",
+        "sonner": "^1.2.0",
         "swr": "^2.2.4",
         "tailwind-merge": "^2.0.0",
         "tailwindcss-animate": "^1.0.7",
         "zod": "^3.22.4"
     },
     "devDependencies": {
-        "@types/node": "^20",
-        "@types/react": "^18",
-        "@types/react-dom": "^18",
-        "autoprefixer": "^10",
-        "eslint": "^8",
+        "@types/node": "^20.8.10",
+        "@types/react": "^18.2.36",
+        "@types/react-dom": "^18.2.14",
+        "autoprefixer": "^10.4.16",
+        "eslint": "^8.53.0",
         "eslint-config-next": "14.0.1",
-        "postcss": "^8",
-        "tailwindcss": "^3",
-        "typescript": "^5"
+        "postcss": "^8.4.31",
+        "tailwindcss": "^3.3.5",
+        "typescript": "^5.2.2"
     }
 }
