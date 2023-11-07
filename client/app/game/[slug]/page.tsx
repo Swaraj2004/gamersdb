@@ -33,16 +33,16 @@ const GameData = async ({ params }: { params: { slug: string } }) => {
 
         return (
             <div className="relative">
-                <div className="pt-20 pb-10 px-4 min-h-screen box-border md:px-4 lg:px-6 2xl:container">
+                <div className="pt-16 pb-10 px-4 min-h-screen box-border md:px-4 lg:px-6 2xl:container">
                     <Suspense fallback={<></>}>
-                        <div className="absolute -z-20 top-0 left-0 right-0 -translate-y-14">
+                        <div className="absolute -z-20 top-0 left-0 right-0">
                             <Image
                                 src={game?.screenshots?.[0] || "/gamebg.png"}
                                 width="1920"
                                 height="1080"
-                                className="object-cover blur-sm h-[380px] mx-auto filter dark:brightness-75"
+                                className="object-cover blur-sm h-[385px] mx-auto filter dark:brightness-75"
                                 quality={100}
-                                alt="."
+                                alt="Game Background"
                             />
                         </div>
                         <div className="grid grid-cols-[25%_65%_10%] max-w-6xl mx-auto">

@@ -44,7 +44,7 @@ const Home = async () => {
         const newsArr = newsRes.result;
 
         return (
-            <div className="pt-20 pb-10 px-4 min-h-screen box-border md:px-4 lg:px-6 2xl:container">
+            <div className="pt-16 pb-10 px-4 min-h-screen box-border md:px-4 lg:px-6 2xl:container">
                 <HeroSection />
                 <Suspense fallback={<></>}>
                     <DisplayGames
