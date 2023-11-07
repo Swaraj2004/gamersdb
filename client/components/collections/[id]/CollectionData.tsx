@@ -33,15 +33,7 @@ const CollectionData = () => {
         { revalidateOnFocus: false }
     );
     const games = colldata?.result?.games;
-
-    if (isLoading)
-        return (
-            <div>
-                <div className="text-2xl font-semibold">Collection</div>
-                <div className="mt-3 mx-auto">Loading...</div>
-            </div>
-        );
-    if (error) return <ErrorMessage message={error.message} />;
+    // console.log(games);
 
     const handleRemove = async (
         e: React.MouseEvent<HTMLElement>,
@@ -74,7 +66,7 @@ const CollectionData = () => {
                 <Button
                     variant="destructive"
                     size="icon"
-                    className="absolute rounded-full top-1 right-1 z-30 invisible group-hover:visible"
+                    className="absolute rounded-full top-1 right-1 z-30 lg:invisible lg:group-hover:visible"
                     onClick={(e) => handleRemove(e, game.slug)}
                 >
                     <TrashIcon className="h-5 w-5" />
@@ -98,23 +90,32 @@ const CollectionData = () => {
             </Card>
         </li>
     ));
+    console.log(gamesList);
 
     return (
         <div className="mb-6">
-            <h3 className="text-xl font-semibold">
-                {colldata?.result.collection}
-                <ChevronRightIcon className="inline h-6 w-6 mb-1" />
-            </h3>
-            <hr className="mt-2 mb-4" />
-            <ul className="flex justify-center flex-wrap gap-4">
-                {session && !isLoading && gamesList?.length > 0 ? (
-                    gamesList
-                ) : (
-                    <ErrorMessage
-                        message={"Go search and add games in this collection."}
-                    />
-                )}
-            </ul>
+            {error && <ErrorMessage message={"Failed to load games."} />}
+            {isLoading && <ErrorMessage message={"Loading..."} />}
+            {session && !isLoading && !error && (
+                <>
+                    <h3 className="text-xl font-semibold">
+                        {colldata?.result.collection}
+                        <ChevronRightIcon className="inline h-6 w-6 mb-1" />
+                    </h3>
+                    <hr className="mt-2 mb-4" />
+                    <ul className="flex justify-center flex-wrap gap-4">
+                        {games?.length > 0 ? (
+                            gamesList
+                        ) : (
+                            <ErrorMessage
+                                message={
+                                    "Go search and add games in this collection."
+                                }
+                            />
+                        )}
+                    </ul>
+                </>
+            )}
         </div>
     );
 };

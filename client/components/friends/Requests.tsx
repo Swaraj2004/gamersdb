@@ -26,21 +26,6 @@ const Requests = () => {
         error,
     } = useSWR(uid && `/requests?uid=${uid}`, getRequests);
 
-    if (isLoading)
-        return (
-            <>
-                <div className="text-2xl font-semibold">Requests</div>
-                <div className="mt-3 mx-auto">Loading...</div>
-            </>
-        );
-    if (error)
-        return (
-            <>
-                <div className="text-2xl font-semibold">Requests</div>
-                <div className="mt-3 mx-auto">There is an error.</div>
-            </>
-        );
-
     const handleAccept = async (requestId: string) => {
         try {
             const data = await acceptRequest({
@@ -143,8 +128,10 @@ const Requests = () => {
     return (
         <>
             <div className="text-2xl font-semibold">Requests</div>
+            {error && <div>Failed to load requests.</div>}
             {session &&
                 !isLoading &&
+                !error &&
                 requests?.result?.receivedRequests?.length !== 0 && (
                     <div className="mt-3">
                         <div className="text-muted-foreground">Recieved</div>
@@ -153,6 +140,7 @@ const Requests = () => {
                 )}
             {session &&
                 !isLoading &&
+                !error &&
                 requests?.result?.sentRequests?.length !== 0 && (
                     <div className="mt-3">
                         <div className="text-muted-foreground">Pending</div>
@@ -161,6 +149,7 @@ const Requests = () => {
                 )}
             {session &&
                 !isLoading &&
+                !error &&
                 requests?.result?.receivedRequests?.length === 0 &&
                 requests?.result?.sentRequests?.length === 0 && (
                     <div className="mt-3 mx-auto">

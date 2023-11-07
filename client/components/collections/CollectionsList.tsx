@@ -264,13 +264,13 @@ const CollectionsList = () => {
                 <TabsContent value="owned">
                     <ul className="mt-5">
                         {isLoadingOwned && (
-                            <div className="text-center text-lg">
+                            <div className="text-center text-lg mt-10">
                                 Loading...
                             </div>
                         )}
                         {errorOwned && (
                             <div className="text-center text-lg">
-                                There is an error.
+                                Failed to load owned collections.
                             </div>
                         )}
                         {session &&
@@ -288,13 +288,13 @@ const CollectionsList = () => {
                 <TabsContent value="shared">
                     <ul className="mt-5">
                         {isLoadingShared && (
-                            <div className="text-center text-lg">
+                            <div className="text-center text-lg mt-10">
                                 Loading...
                             </div>
                         )}
                         {errorShared && (
                             <div className="text-center text-lg">
-                                There is an error.
+                                Failed to load shared collections.
                             </div>
                         )}
                         {session &&

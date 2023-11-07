@@ -27,15 +27,6 @@ const CollectionData = () => {
     );
     const games = colldata?.result?.games;
 
-    if (isLoading)
-        return (
-            <div>
-                <div className="text-2xl font-semibold">Collection</div>
-                <div className="mt-3 mx-auto">Loading...</div>
-            </div>
-        );
-    if (error) return <ErrorMessage message={error.message} />;
-
     const openGame = (slug: string) => {
         router.push("/game/" + slug);
     };
@@ -68,20 +59,28 @@ const CollectionData = () => {
 
     return (
         <div className="mb-6">
-            <h3 className="text-xl font-semibold">
-                {colldata?.result.collection}
-                <ChevronRightIcon className="inline h-6 w-6 mb-1" />
-            </h3>
-            <hr className="mt-2 mb-4" />
-            <ul className="flex justify-center flex-wrap gap-4">
-                {session && !isLoading && gamesList?.length > 0 ? (
-                    gamesList
-                ) : (
-                    <ErrorMessage
-                        message={"No games added in this collection."}
-                    />
-                )}
-            </ul>
+            {error && <ErrorMessage message={"Failed to load games."} />}
+            {isLoading && <ErrorMessage message={"Loading..."} />}
+            {session && !isLoading && !error && (
+                <>
+                    <h3 className="text-xl font-semibold">
+                        {colldata?.result.collection}
+                        <ChevronRightIcon className="inline h-6 w-6 mb-1" />
+                    </h3>
+                    <hr className="mt-2 mb-4" />
+                    <ul className="flex justify-center flex-wrap gap-4">
+                        {games?.length > 0 ? (
+                            gamesList
+                        ) : (
+                            <ErrorMessage
+                                message={
+                                    "Go search and add games in this collection."
+                                }
+                            />
+                        )}
+                    </ul>
+                </>
+            )}
         </div>
     );
 };

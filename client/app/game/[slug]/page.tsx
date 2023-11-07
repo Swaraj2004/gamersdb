@@ -32,9 +32,9 @@ const GameData = async ({ params }: { params: { slug: string } }) => {
         };
 
         return (
-            <Suspense fallback={<></>}>
-                <div className="relative">
-                    <div className="my-16 px-4 md:px-4 lg:px-6 2xl:container">
+            <div className="relative">
+                <div className="pt-20 pb-10 px-4 min-h-screen box-border md:px-4 lg:px-6 2xl:container">
+                    <Suspense fallback={<></>}>
                         <div className="absolute -z-20 top-0 left-0 right-0 -translate-y-14">
                             <Image
                                 src={game?.screenshots?.[0] || "/gamebg.png"}
@@ -76,9 +76,9 @@ const GameData = async ({ params }: { params: { slug: string } }) => {
                                 <Screenshots urls={game.screenshots} />
                             </div>
                         )}
-                    </div>
+                    </Suspense>
                 </div>
-            </Suspense>
+            </div>
         );
     } catch (error: any) {
         <ErrorMessage message="Something went wrong." />;

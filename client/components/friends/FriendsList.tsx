@@ -102,10 +102,11 @@ const FriendsList = () => {
                 )}
                 {error && (
                     <div className="text-center text-lg">
-                        There is an error.
+                        Failed to load friends.
                     </div>
                 )}
                 {session &&
+                    !error &&
                     !isLoading &&
                     (friendsList?.length > 0 ? (
                         friendsList

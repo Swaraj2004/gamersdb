@@ -12,7 +12,7 @@ async function searchGames(name: string): Promise<SearchGameResponse> {
         }
     );
     if (!res.ok) {
-        throw new Error("Failed to fetch data");
+        throw new Error("Failed to fetch data.");
     }
     return res.json();
 }
@@ -37,7 +37,7 @@ const Search = async ({ searchParams }: { searchParams: { name: string } }) => {
         }
 
         return (
-            <div className="my-16 px-4 md:px-4 lg:px-6 2xl:container">
+            <div className="pt-20 pb-10 px-4 min-h-screen box-border md:px-4 lg:px-6 2xl:container">
                 <Suspense fallback={<></>}>
                     <SearchedGames games={games} title={"Search Results"} />
                 </Suspense>

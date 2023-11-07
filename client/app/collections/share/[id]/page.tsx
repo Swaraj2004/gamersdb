@@ -3,7 +3,7 @@ import SharedCollectionData from "@/components/collections/share/[id]/SharedColl
 
 const SharedCollectionPage = () => {
     return (
-        <div className="my-16 px-4 md:px-4 lg:px-6 2xl:container">
+        <div className="pt-20 pb-10 px-4 min-h-screen box-border md:px-4 lg:px-6 2xl:container">
             <Suspense fallback={<></>}>
                 <SharedCollectionData />
             </Suspense>
