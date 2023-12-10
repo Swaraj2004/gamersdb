@@ -1,11 +1,11 @@
 import Navbar from "@/components/shared/Navbar";
-import { ThemeProvider } from "@/components/shared/ThemeProvider";
+import { ThemeProvider } from "@/context/ThemeProvider";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import AuthProvider from "@/context/AuthProvider";
-import ProgressBarProvider from "@/components/shared/ProgressBarProvider";
+import ProgressBarProvider from "@/context/ProgressBarProvider";
 
 const inter = Inter({
     subsets: ["latin"],
