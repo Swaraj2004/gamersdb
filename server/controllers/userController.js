@@ -3,10 +3,24 @@ const Collection = require("../models/Collection");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcrypt");
 const isBase64 = require("is-base64");
+const jwt = require("jsonwebtoken");
 
-// @desc Login user
+// Utility functions to generate tokens
+const generateAccessToken = (user) => {
+    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "15m",
+    });
+};
+
+const generateRefreshToken = (user) => {
+    return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: "7d",
+    });
+};
+
+// @desc Login user and issue JWT tokens
 // @route POST /user/login
-// @access Private
+// @access Public
 const getUser = asyncHandler(async (req, res) => {
     const { username: name, email: mail, password: pass } = req.body;
 
@@ -14,36 +28,108 @@ const getUser = asyncHandler(async (req, res) => {
     if (!((name && pass) || (mail && pass))) {
         return res
             .status(400)
-            .json({ message: "All fields are required", success: false });
+            .json({ message: "All fields are required.", success: false });
     }
 
     // Check if user exists
     let user;
     if (name) {
-        user = await User.findOne({ username: name }).lean();
+        user = await User.findOne({ username: name }).exec();
     } else if (mail) {
-        user = await User.findOne({ email: mail }).lean();
+        user = await User.findOne({ email: mail }).exec();
     }
     if (!user) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
 
     // Check if password is correct
     const passwordEquals = await bcrypt.compare(pass, user.password);
     if (!passwordEquals) {
-        return res.status(401).json({
-            message: "Password is invalid",
-            success: false,
-        });
+        return res
+            .status(401)
+            .json({ message: "Password is invalid.", success: false });
     }
 
-    // Seprate data to send
-    const { _id, username, email, profileImg } = user;
-    const data = { _id, username, email, profileImg };
+    // Issue JWT tokens
+    const accessToken = generateAccessToken({
+        _id: user._id,
+        email: user.email,
+    });
+    const refreshToken = generateRefreshToken({
+        _id: user._id,
+        email: user.email,
+    });
 
-    res.json({ result: data, success: true });
+    // Store the refresh token in the database
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.json({
+        success: true,
+        accessToken,
+        refreshToken,
+        user: {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            profileImg: user.profileImg,
+        },
+    });
+});
+
+// @desc Refresh JWT access token
+// @route POST /user/refresh-token
+// @access Public
+const refreshToken = asyncHandler(async (req, res) => {
+    const { refreshToken } = req.body;
+
+    // Confirm data
+    if (!refreshToken) {
+        return res.status(403).json({ message: "Refresh token required." });
+    }
+
+    // Check if refresh token is valid
+    const user = await User.findOne({ refreshToken }).exec();
+
+    if (!user) {
+        return res.status(403).json({ message: "Invalid refresh token." });
+    }
+
+    jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SECRET,
+        (err, decoded) => {
+            if (err)
+                return res
+                    .status(403)
+                    .json({ message: "Invalid refresh token." });
+
+            const newAccessToken = generateAccessToken({
+                _id: decoded._id,
+                email: decoded.email,
+            });
+            res.json({ accessToken: newAccessToken });
+        }
+    );
+});
+
+// @desc Logout user
+// @route POST /user/logout
+// @access Private
+const logout = asyncHandler(async (req, res) => {
+    const { refreshToken } = req.body;
+
+    // Confirm data
+    const user = await User.findOne({ refreshToken }).exec();
+    if (user) {
+        // Remove refresh token from user record in the database
+        user.refreshToken = null;
+        await user.save();
+    }
+
+    res.status(204).json({ message: "Logged out successfully." });
 });
 
 // @desc Create Register user
@@ -56,7 +142,7 @@ const createNewUser = asyncHandler(async (req, res) => {
     if (!username || !email || !password) {
         return res
             .status(400)
-            .json({ message: "All fields are required", success: false });
+            .json({ message: "All fields are required.", success: false });
     }
 
     // Check if username valid
@@ -85,7 +171,7 @@ const createNewUser = asyncHandler(async (req, res) => {
     };
     if (!isValidEmail(email)) {
         return res.status(401).json({
-            message: "Email is invalid",
+            message: "Email is invalid.",
             success: false,
         });
     }
@@ -103,13 +189,13 @@ const createNewUser = asyncHandler(async (req, res) => {
     if (duplicateUser) {
         return res
             .status(409)
-            .json({ message: "Username already exists", success: false });
+            .json({ message: "Username already exists.", success: false });
     }
     const duplicateEmail = await User.findOne({ email }).lean().exec();
     if (duplicateEmail) {
         return res
             .status(409)
-            .json({ message: "Email already used", success: false });
+            .json({ message: "Email already used.", success: false });
     }
 
     // Hash password
@@ -121,7 +207,7 @@ const createNewUser = asyncHandler(async (req, res) => {
     await User.create(userObject);
 
     res.status(201).json({
-        message: "User registered successfully",
+        message: "User registered successfully.",
         success: true,
     });
 });
@@ -135,7 +221,7 @@ const updateUser = asyncHandler(async (req, res) => {
     // Confirm data
     if (!userId || !username || !email) {
         return res.status(400).json({
-            message: "All fields except password are required",
+            message: "All fields except password are required.",
             success: false,
         });
     }
@@ -145,7 +231,7 @@ const updateUser = asyncHandler(async (req, res) => {
     if (!user) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
 
     // Check for duplicate
@@ -155,7 +241,7 @@ const updateUser = asyncHandler(async (req, res) => {
     if (duplicate && duplicate?._id.toString() !== userId) {
         return res
             .status(409)
-            .json({ message: "Username already exists", success: false });
+            .json({ message: "Username already exists.", success: false });
     }
 
     if (profileImg) {
@@ -163,7 +249,7 @@ const updateUser = asyncHandler(async (req, res) => {
         if (!isBase64(profileImg, { allowMime: true, allowEmpty: false })) {
             return res
                 .status(400)
-                .json({ message: "Invalid image", success: false });
+                .json({ message: "Image is invalid.", success: false });
         }
         user.profileImg = profileImg;
     }
@@ -174,7 +260,7 @@ const updateUser = asyncHandler(async (req, res) => {
     await user.save();
 
     res.json({
-        message: "User profile updated successfully",
+        message: "User profile updated successfully.",
         success: true,
     });
 });
@@ -188,7 +274,7 @@ const updatePassword = asyncHandler(async (req, res) => {
     // Confirm data
     if (!userId || !pass || !newPassword) {
         return res.status(400).json({
-            message: "All fields are required",
+            message: "All fields are required.",
             success: false,
         });
     }
@@ -198,14 +284,14 @@ const updatePassword = asyncHandler(async (req, res) => {
     if (!user) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
 
     // Check if password is correct
     const passwordEquals = await bcrypt.compare(pass, user.password);
     if (!passwordEquals) {
         return res.status(401).json({
-            message: "Password is invalid",
+            message: "Password is invalid.",
             success: false,
         });
     }
@@ -217,7 +303,7 @@ const updatePassword = asyncHandler(async (req, res) => {
     await user.save();
 
     res.json({
-        message: "Password updated successfully",
+        message: "Password updated successfully.",
         success: true,
     });
 });
@@ -226,13 +312,14 @@ const updatePassword = asyncHandler(async (req, res) => {
 // @route DELETE /user
 // @access Private
 const deleteUser = asyncHandler(async (req, res) => {
-    const { uid: userId, password: pass } = req.query;
+    const { userId } = req.params;
+    const { password: pass } = req.query;
 
     // Confirm data
     if (!userId || !pass) {
         return res
             .status(400)
-            .json({ message: "All fields are required", success: false });
+            .json({ message: "All fields are required.", success: false });
     }
 
     // Check if user exists to delete
@@ -240,14 +327,14 @@ const deleteUser = asyncHandler(async (req, res) => {
     if (!user) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
 
     // Check if password is correct
     const passwordEquals = await bcrypt.compare(pass, user.password);
     if (!passwordEquals) {
         return res.status(401).json({
-            message: "Password is invalid",
+            message: "Password is invalid.",
             success: false,
         });
     }
@@ -261,7 +348,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     await user.deleteOne();
 
     res.json({
-        message: "User deleted successfully",
+        message: "User deleted successfully.",
         success: true,
     });
 });
@@ -272,4 +359,6 @@ module.exports = {
     updateUser,
     updatePassword,
     deleteUser,
+    refreshToken,
+    logout,
 };
