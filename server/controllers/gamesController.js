@@ -14,7 +14,7 @@ const getAllRecentAndUpcommingGames = asyncHandler(async (req, res) => {
     // Check data
     if (!limit) {
         return res.status(400).json({
-            message: "Page limit is required",
+            message: "Page limit is required.",
             success: false,
         });
     }
@@ -29,7 +29,7 @@ const getAllRecentAndUpcommingGames = asyncHandler(async (req, res) => {
                 .query("games", "recent-releases")
                 .fields("name, cover.url, slug, aggregated_rating")
                 .where(
-                    `first_release_date < ${now} & parent_game = null & version_parent = null`
+                    `first_release_date < ${now} & parent_game = null & version_parent = null & themes != (42)`
                 )
                 .sort("first_release_date desc")
                 .limit(limit),
@@ -37,7 +37,7 @@ const getAllRecentAndUpcommingGames = asyncHandler(async (req, res) => {
                 .query("games", "coming-soon")
                 .fields("name, cover.url, slug, aggregated_rating")
                 .where(
-                    `first_release_date > ${now} & parent_game = null & version_parent = null`
+                    `first_release_date > ${now} & parent_game = null & version_parent = null & themes != (42)`
                 )
                 .sort("first_release_date asc")
                 .limit(limit),
@@ -71,18 +71,19 @@ const searchGames = asyncHandler(async (req, res) => {
     if (!name) {
         return res
             .status(400)
-            .json({ message: "Name is required", success: false });
+            .json({ message: "Name is required.", success: false });
     }
 
     // If platforms or genres or minRating provided
     // then form search query accordingly
-    let query = "";
+    let query = "themes != (42)";
     const joinAnd = () => {
         if (query !== "") {
             query += " & ";
         }
     };
     if (platforms) {
+        joinAnd();
         query += `platforms = (${[...platforms]})`;
     }
     if (genres) {
@@ -126,7 +127,7 @@ const getGameData = asyncHandler(async (req, res) => {
     if (!slug) {
         return res
             .status(400)
-            .json({ message: "Game slug is required", success: false });
+            .json({ message: "Game slug is required.", success: false });
     }
 
     // Fetch game data
@@ -159,7 +160,7 @@ const getGameData = asyncHandler(async (req, res) => {
     if (!response.data.length) {
         return res
             .status(404)
-            .json({ message: "Game not found", success: false });
+            .json({ message: "Game not found.", success: false });
     }
 
     // Fetched game data

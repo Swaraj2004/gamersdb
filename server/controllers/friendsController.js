@@ -12,7 +12,7 @@ const getAllFriends = asyncHandler(async (req, res) => {
     if (!userId) {
         return res
             .status(400)
-            .json({ message: "User ID is required", success: false });
+            .json({ message: "User ID is required.", success: false });
     }
 
     // Check if user exists
@@ -22,7 +22,7 @@ const getAllFriends = asyncHandler(async (req, res) => {
     if (!user) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
 
     // Get all friends from friends array
@@ -32,7 +32,7 @@ const getAllFriends = asyncHandler(async (req, res) => {
     if (!friends?.length) {
         return res
             .status(200)
-            .json({ message: "No friends found", success: false });
+            .json({ message: "No friends found.", success: false });
     }
 
     res.json({ result: friends, success: true });
@@ -47,7 +47,7 @@ const sendRequest = asyncHandler(async (req, res) => {
     // Confirm data
     if (!userId || !friendName) {
         return res.status(400).json({
-            message: "All fields are required",
+            message: "All fields are required.",
             success: false,
         });
     }
@@ -57,7 +57,7 @@ const sendRequest = asyncHandler(async (req, res) => {
     if (!user) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
 
     // Check if username exists
@@ -65,13 +65,13 @@ const sendRequest = asyncHandler(async (req, res) => {
     if (!friend) {
         return res
             .status(404)
-            .json({ message: "Username is not correct", success: false });
+            .json({ message: "Username is not correct.", success: false });
     }
 
     // Dont send request to same user
     if (user.username == friendName) {
         return res.status(400).json({
-            message: "Can not send request to yourself",
+            message: "Can not send request to yourself.",
             success: false,
         });
     }
@@ -84,7 +84,7 @@ const sendRequest = asyncHandler(async (req, res) => {
     if (requestSent) {
         return res
             .status(400)
-            .json({ message: "Friend request already sent", success: false });
+            .json({ message: "Friend request already sent.", success: false });
     }
 
     // Check if request already received
@@ -93,12 +93,10 @@ const sendRequest = asyncHandler(async (req, res) => {
         recipient: userId,
     }).lean();
     if (requestRecieved) {
-        return res
-            .status(400)
-            .json({
-                message: "Friend request already received",
-                success: false,
-            });
+        return res.status(400).json({
+            message: "Friend request already received.",
+            success: false,
+        });
     }
 
     // Check if already friends
@@ -108,7 +106,7 @@ const sendRequest = asyncHandler(async (req, res) => {
     if (isInArr) {
         return res
             .status(400)
-            .json({ message: "Friend already added", success: false });
+            .json({ message: "Friend already added.", success: false });
     }
 
     // Create a friend request
@@ -119,7 +117,7 @@ const sendRequest = asyncHandler(async (req, res) => {
     });
 
     res.status(201).json({
-        message: "Friend request sent successfully",
+        message: "Friend request sent successfully.",
         success: true,
     });
 });
@@ -134,7 +132,7 @@ const getRequests = asyncHandler(async (req, res) => {
     if (!userId) {
         return res
             .status(400)
-            .json({ message: "User ID is required", success: false });
+            .json({ message: "User ID is required.", success: false });
     }
 
     // Check if user exists
@@ -142,7 +140,7 @@ const getRequests = asyncHandler(async (req, res) => {
     if (!user) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
 
     const sentRequests = await FriendRequest.find({ sender: userId })
@@ -164,7 +162,7 @@ const acceptRequest = asyncHandler(async (req, res) => {
     // Confirm data
     if (!userId || !requestId) {
         return res.status(400).json({
-            message: "All fields are is required",
+            message: "All fields are is required.",
             success: false,
         });
     }
@@ -174,19 +172,19 @@ const acceptRequest = asyncHandler(async (req, res) => {
     if (!user) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
     const request = await FriendRequest.findById(requestId);
     if (!request) {
         return res
             .status(404)
-            .json({ message: "Request not found", success: false });
+            .json({ message: "Request not found.", success: false });
     }
 
     // Check if user is the recipient of the request
     if (userId !== request.recipient.toString()) {
         return res.status(400).json({
-            message: "User is not the recipient of the request",
+            message: "User is not the recipient of the request.",
             success: false,
         });
     }
@@ -203,7 +201,7 @@ const acceptRequest = asyncHandler(async (req, res) => {
     await FriendRequest.findByIdAndDelete(requestId);
 
     res.json({
-        message: "Friend request accepted successfully",
+        message: "Friend request accepted successfully.",
         success: true,
     });
 });
@@ -217,7 +215,7 @@ const rejectRequest = asyncHandler(async (req, res) => {
     // Confirm data
     if (!userId || !requestId) {
         return res.status(400).json({
-            message: "All fields are required",
+            message: "All fields are required.",
             success: false,
         });
     }
@@ -227,19 +225,19 @@ const rejectRequest = asyncHandler(async (req, res) => {
     if (!user) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
     const request = await FriendRequest.findById(requestId);
     if (!request) {
         return res
             .status(404)
-            .json({ message: "Request not found", success: false });
+            .json({ message: "Request not found.", success: false });
     }
 
     // Check if user is the recipient of the request
     if (userId !== request.recipient.toString()) {
         return res.status(400).json({
-            message: "User is not the recipient of the request",
+            message: "User is not the recipient of the request.",
             success: false,
         });
     }
@@ -248,7 +246,7 @@ const rejectRequest = asyncHandler(async (req, res) => {
     await FriendRequest.findByIdAndDelete(requestId);
 
     res.json({
-        message: "Friend request rejected successfully",
+        message: "Friend request rejected successfully.",
         success: true,
     });
 });
@@ -263,7 +261,7 @@ const removeFriend = asyncHandler(async (req, res) => {
     if (!userId || !friendId) {
         return res
             .status(400)
-            .json({ message: "All fields are required", success: false });
+            .json({ message: "All fields are required.", success: false });
     }
 
     // Check if user & friend exists
@@ -274,7 +272,7 @@ const removeFriend = asyncHandler(async (req, res) => {
     if (!user || !friend) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
 
     // Check if friend is not added
@@ -284,7 +282,7 @@ const removeFriend = asyncHandler(async (req, res) => {
     if (!isInArr) {
         return res
             .status(400)
-            .json({ message: "Friend not added", success: false });
+            .json({ message: "Friend not added.", success: false });
     }
 
     // Remove friend
@@ -314,7 +312,7 @@ const removeFriend = asyncHandler(async (req, res) => {
     await friend.save();
 
     res.json({
-        message: `Friend removed successfully`,
+        message: "Friend removed successfully.",
         success: true,
     });
 });

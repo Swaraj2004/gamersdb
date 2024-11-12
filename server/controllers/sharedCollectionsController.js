@@ -12,7 +12,7 @@ const getAllSharedCollections = asyncHandler(async (req, res) => {
     if (!userId) {
         return res
             .status(400)
-            .json({ message: "User ID is required", success: false });
+            .json({ message: "User ID is required.", success: false });
     }
 
     // Check if user exists
@@ -25,7 +25,7 @@ const getAllSharedCollections = asyncHandler(async (req, res) => {
     if (!user) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
 
     // Get all shared collections
@@ -42,7 +42,7 @@ const getAllSharedCollections = asyncHandler(async (req, res) => {
     if (!shared?.length) {
         return res
             .status(200)
-            .json({ message: "No shared collections found", success: false });
+            .json({ message: "No shared collections found.", success: false });
     }
 
     res.json({ result: shared, success: true });
@@ -58,7 +58,7 @@ const getCollectionSharedWith = asyncHandler(async (req, res) => {
     if (!collectionId || !userId) {
         return res
             .status(400)
-            .json({ message: "All fields are required", success: false });
+            .json({ message: "All fields are required.", success: false });
     }
 
     // Check if collection exists to delete
@@ -68,7 +68,7 @@ const getCollectionSharedWith = asyncHandler(async (req, res) => {
     if (!collection) {
         return res
             .status(404)
-            .json({ message: "Collection not found", success: false });
+            .json({ message: "Collection not found.", success: false });
     }
 
     // Check if user exists
@@ -76,13 +76,13 @@ const getCollectionSharedWith = asyncHandler(async (req, res) => {
     if (!user) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
 
     // Check if user is owner of the collection
     if (userId !== collection.owner.toString()) {
         return res.status(400).json({
-            message: "User is not the owner of the collection",
+            message: "User is not the owner of the collection.",
             success: false,
         });
     }
@@ -98,7 +98,7 @@ const getCollectionSharedWith = asyncHandler(async (req, res) => {
     // If no shared collections
     if (!sharedWith?.length) {
         return res.status(200).json({
-            message: "Collection is not shared with anyone",
+            message: "Collection is not shared with anyone.",
             success: false,
         });
     }
@@ -116,7 +116,7 @@ const shareCollection = asyncHandler(async (req, res) => {
     if (!userId || !friendId || !collectionId) {
         return res
             .status(400)
-            .json({ message: "All fields are required", success: false });
+            .json({ message: "All fields are required.", success: false });
     }
 
     // Check if user & friend exists
@@ -125,7 +125,7 @@ const shareCollection = asyncHandler(async (req, res) => {
     if (!user || !friend) {
         return res
             .status(404)
-            .json({ message: "User not found", success: false });
+            .json({ message: "User not found.", success: false });
     }
 
     // Check if collection exists
@@ -133,7 +133,7 @@ const shareCollection = asyncHandler(async (req, res) => {
     if (!collection) {
         return res
             .status(404)
-            .json({ message: "Collection not found", success: false });
+            .json({ message: "Collection not found.", success: false });
     }
 
     // Check if friend is not added
@@ -143,7 +143,7 @@ const shareCollection = asyncHandler(async (req, res) => {
     if (!friendInArr) {
         return res
             .status(400)
-            .json({ message: "Friend not added", success: false });
+            .json({ message: "Friend not added.", success: false });
     }
 
     // Check if collection already shared
@@ -155,7 +155,7 @@ const shareCollection = asyncHandler(async (req, res) => {
     if (collectionInSharedArr) {
         return res
             .status(400)
-            .json({ message: "Collection already shared", success: false });
+            .json({ message: "Collection already shared.", success: false });
     }
 
     // Push collection to friend's sharedCollections
@@ -167,7 +167,7 @@ const shareCollection = asyncHandler(async (req, res) => {
     await collection.save();
 
     res.json({
-        message: `Collection shared with ${friend.username} successfully`,
+        message: `Collection shared with ${friend.username} successfully.`,
         success: true,
     });
 });
@@ -182,7 +182,7 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
     if (!friendId || !collectionId) {
         return res
             .status(400)
-            .json({ message: "All fields are required", success: false });
+            .json({ message: "All fields are required.", success: false });
     }
 
     // Check if collection exists
@@ -190,14 +190,14 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
     if (!collection) {
         return res
             .status(404)
-            .json({ message: "Collection not found", success: false });
+            .json({ message: "Collection not found.", success: false });
     }
 
     // Check if friend exists
     const friend = await User.findById(friendId).exec();
     if (!friend) {
         return res.status(404).json({
-            message: `User with friendId ${friendId} not found`,
+            message: `User with friendId ${friendId} not found.`,
             success: false,
         });
     }
@@ -207,7 +207,7 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
         const user = await User.findById(userId).exec();
         if (!user) {
             return res.status(404).json({
-                message: `User with userId ${userId} not found`,
+                message: `User with userId ${userId} not found.`,
                 success: false,
             });
         }
@@ -215,7 +215,7 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
         // Check if user is the owner
         if (userId !== collection.owner.toString()) {
             return res.status(400).json({
-                message: "User is not the owner of the collection",
+                message: "User is not the owner of the collection.",
                 success: false,
             });
         }
@@ -227,7 +227,7 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
         if (!friendInArr) {
             return res
                 .status(400)
-                .json({ message: "Friend not added", success: false });
+                .json({ message: "Friend not added.", success: false });
         }
     }
 
@@ -240,7 +240,7 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
     if (!collectionInSharedArr) {
         return res
             .status(400)
-            .json({ message: "Collection not shared", success: false });
+            .json({ message: "Collection not shared.", success: false });
     }
 
     // Remove shared collection
@@ -257,7 +257,7 @@ const removeSharedCollection = asyncHandler(async (req, res) => {
     await collection.save();
 
     res.json({
-        message: "Collection unshared successfully",
+        message: "Collection unshared successfully.",
         success: true,
     });
 });

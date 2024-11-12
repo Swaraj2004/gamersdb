@@ -10,7 +10,7 @@ const getNews = (req, res) => {
     // Check data
     if (!limit) {
         return res.status(400).json({
-            message: "Page limit is required",
+            message: "Page limit is required.",
             success: false,
         });
     }
