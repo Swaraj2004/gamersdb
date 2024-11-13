@@ -24,13 +24,21 @@ const Requests = () => {
         data: requests,
         isLoading,
         error,
-    } = useSWR(uid && `/requests?uid=${uid}`, getRequests);
+    } = useSWR(
+        uid ? `/requests?uid=${uid}` : null,
+        (url) => getRequests(url, session?.accessToken),
+        {
+            revalidateOnFocus: false,
+            revalidateIfStale: false,
+        }
+    );
 
     const handleAccept = async (requestId: string) => {
         try {
             const data = await acceptRequest({
                 userId: uid!,
                 requestId,
+                accessToken: session?.accessToken,
             });
             mutate(`?uid=${uid}`);
             mutate(`/requests?uid=${uid}`);
@@ -45,6 +53,7 @@ const Requests = () => {
             const data = await rejectRequest({
                 userId: uid!,
                 requestId,
+                accessToken: session?.accessToken,
             });
             mutate(`?uid=${uid}`);
             mutate(`/requests?uid=${uid}`);

@@ -22,7 +22,9 @@ const ShareCollection = ({ collection }: any) => {
         data: friends,
         isLoading,
         error,
-    } = useSWR(uid && `?uid=${uid}`, getFriends);
+    } = useSWR(uid ? `?uid=${uid}` : null, (url) =>
+        getFriends(url, session?.accessToken)
+    );
 
     const handleShare = async (reqbody: {
         userId: string;
@@ -30,7 +32,10 @@ const ShareCollection = ({ collection }: any) => {
         collectionId: string;
     }) => {
         try {
-            const data = await shareCollection(reqbody);
+            const data = await shareCollection({
+                ...reqbody,
+                accessToken: session?.accessToken,
+            });
             toast.success(data.message);
         } catch (error: any) {
             toast.error(error.message);

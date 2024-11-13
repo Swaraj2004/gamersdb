@@ -25,13 +25,21 @@ const FriendsList = () => {
         data: friends,
         isLoading,
         error,
-    } = useSWR(uid && `?uid=${uid}`, getFriends);
+    } = useSWR(
+        uid ? `?uid=${uid}` : null,
+        (url) => getFriends(url, session?.accessToken),
+        {
+            revalidateOnFocus: false,
+            revalidateIfStale: false,
+        }
+    );
 
     const handleRemove = async (friendId: string) => {
         try {
             const data = await removeFriend({
                 userId: uid!,
                 friendId,
+                accessToken: session?.accessToken,
             });
             mutate(`?uid=${uid}`);
             toast.success(data.message);

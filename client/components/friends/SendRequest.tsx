@@ -28,6 +28,7 @@ const SendRequest = () => {
             const data = await sendRequest({
                 userId: uid!,
                 friendName: username,
+                accessToken: session?.accessToken,
             });
             setUsername("");
             mutate(`/requests?uid=${uid}`);

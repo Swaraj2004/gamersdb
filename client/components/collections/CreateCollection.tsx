@@ -28,6 +28,7 @@ const CreateCollection = () => {
             const data = await createCollection({
                 userId: uid!,
                 name: collectionName,
+                accessToken: session?.accessToken,
             });
             setCollectionName("");
             mutate(`/user/collections?uid=${uid}`);

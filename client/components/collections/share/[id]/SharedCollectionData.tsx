@@ -22,8 +22,12 @@ const CollectionData = () => {
         isLoading,
         error,
     } = useSWR(
-        uid && `/user/collection/share?uid=${uid}&collid=${collid}`,
-        getSharedCollection
+        uid ? `/user/collection/share?uid=${uid}&collid=${collid}` : null,
+        (url) => getSharedCollection(url, session?.accessToken),
+        {
+            revalidateOnFocus: false,
+            revalidateIfStale: false,
+        }
     );
     const games = colldata?.result?.games;
 

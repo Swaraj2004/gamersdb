@@ -37,15 +37,26 @@ const CollectionsList = () => {
         data: ownedCollections,
         isLoading: isLoadingOwned,
         error: errorOwned,
-    } = useSWR(uid && `/user/collections?uid=${uid}`, getCollections);
+    } = useSWR(
+        uid ? `/user/collections?uid=${uid}` : null,
+        (url) => getCollections(url, session?.accessToken),
+        {
+            revalidateOnFocus: false,
+            revalidateIfStale: false,
+        }
+    );
 
     const {
         data: sharedCollections,
         isLoading: isLoadingShared,
         error: errorShared,
     } = useSWR(
-        uid && `/user/collections/share?uid=${uid}`,
-        getSharedCollections
+        uid ? `/user/collections/share?uid=${uid}` : null,
+        (url) => getSharedCollections(url, session?.accessToken),
+        {
+            revalidateOnFocus: false,
+            revalidateIfStale: false,
+        }
     );
 
     const handleUpdate = async (
@@ -58,6 +69,7 @@ const CollectionsList = () => {
                 collectionId,
                 name: newCollectionName,
                 userId: uid!,
+                accessToken: session?.accessToken,
             });
             mutate(`/user/collections?uid=${uid}`);
             toast.success(data.message);
@@ -71,6 +83,7 @@ const CollectionsList = () => {
             const data = await deleteCollection({
                 collectionId,
                 userId: uid!,
+                accessToken: session?.accessToken,
             });
             mutate(`/user/collections?uid=${uid}`);
             toast.success(data.message);
@@ -84,6 +97,7 @@ const CollectionsList = () => {
             const data = await unshareCollection({
                 friendId: uid!,
                 collectionId,
+                accessToken: session?.accessToken,
             });
             mutate(`/user/collections/share?uid=${uid}`);
             toast.success(data.message);

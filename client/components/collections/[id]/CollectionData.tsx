@@ -28,9 +28,12 @@ const CollectionData = () => {
         error,
         mutate,
     } = useSWR(
-        uid && `/user/collection?uid=${uid}&collid=${collid}`,
-        getCollection,
-        { revalidateOnFocus: false }
+        uid ? `/user/collection?uid=${uid}&collid=${collid}` : null,
+        (url) => getCollection(url, session?.accessToken),
+        {
+            revalidateOnFocus: false,
+            revalidateIfStale: false,
+        }
     );
     const games = colldata?.result?.games;
     // console.log(games);
@@ -45,6 +48,7 @@ const CollectionData = () => {
                 userId: uid!,
                 collectionId: collid,
                 slug,
+                accessToken: session?.accessToken,
             });
             toast.success(data.message);
             mutate();

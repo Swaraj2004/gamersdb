@@ -30,7 +30,9 @@ const AddToCollection = ({
         data: collections,
         isLoading,
         error,
-    } = useSWR(uid && `/user/collections?uid=${uid}`, getCollections);
+    } = useSWR(uid ? `/user/collections?uid=${uid}` : null, (url) =>
+        getCollections(url, session?.accessToken)
+    );
 
     const handleAdd = async (reqbody: {
         userId: string;
@@ -41,7 +43,10 @@ const AddToCollection = ({
         coverUrl: string | null;
     }) => {
         try {
-            const data = await addGame(reqbody);
+            const data = await addGame({
+                ...reqbody,
+                accessToken: session?.accessToken,
+            });
             toast.success(data.message);
         } catch (error: any) {
             toast.error(error.message);
